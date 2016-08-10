@@ -15,37 +15,39 @@ def beatiful_soup_parse(webpage):
     
     soup = BeautifulSoup(webpage, 'html.parser')
 
-    parent_tweets = soup.findAll("div", {"class" : "content"})
+    # parent_tweets = soup.findAll("div", {"class" : "content"})
+    parent_tweets = soup.findAll("div", {"class" : "tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet "})
 
-    tweet_info = {}
 
     #While it would be more concise to seed directly into my database in this step
     #instead of parsing, saving as json and then iterating over the json while seeding
     #given the time constraints of the project, the cost of having to repeat the download/parse
     #process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
 
+    data_file = open("data_file.txt", "w")
+
     for tweet in parent_tweets:
+        tweet_id = tweet['data-tweet-id']
         handles = tweet.findAll("span", {"class" : "username js-action-profile-name"})
+        tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize js-tweet-text tweet-text"})
+        timestamps = tweet.findAll("a", {"class" : "tweet-timestamp js-permalink js-nav js-tooltip"})
+        profile_location = tweet.findAll("span", {"class" : "Tweet-geo u-floatRight js-tooltip"})
+        place_id = tweet.findAll("a", {"class": "ProfileTweet-actionButton u-linkClean js-nav js-geo-pivot-link"})
 
-        for handle in handles:
-            handle = handle.text
-            if handle not in tweet_info:
-                tweet_info[handle] = []
-            tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize js-tweet-text tweet-text"})
-            timestamps = tweet.findAll("a", {"class" : "tweet-timestamp js-permalink js-nav js-tooltip"})
+        handle = handles[0].text
+        content = tweet_contents[0].text
+        timestamp = timestamps[0]['title']
+        if profile_location:
+            profile_location = profile_location[0]['title']
+        if place_id:
+            place_id = place_id[0]['data-place-id']
 
-        for content in tweet_contents:
-            # tweet_info[handle]["tweet_body"] = content.text
-            content_for_storage = content.text
+        data_file.write("{} | {} | {} | {} | {} | {}\n".format(handle, tweet_id, content, timestamp, profile_location, place_id))
 
-        for timestamp in timestamps:
-            # tweet_info[handle]["timestamp"] = timestamp['title']
-            timestamp_for_storage = timestamp['title']
 
-        tweet_storage = (content_for_storage, timestamp_for_storage)
-        tweet_info[handle].append(tweet_storage)
+    data_file.close()
 
-    return tweet_info
+    return timestamp
 
 
 
@@ -58,26 +60,26 @@ def load_page_and_parse():
     driver = webdriver.Firefox()
 
     #advanced search url - looking for tweets containing Trump OR Clinton
-    # driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen&src=typd")
-    driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen%20since%3A2016-08-08%20until%3A2016-08-09&src=typd&lang=en")
+    driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen&src=typd")
+    # driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen%20since%3A2016-08-08%20until%3A2016-08-09&src=typd&lang=en")
 
 
-    times_to_scroll = 20
+    since = 2016-01-01
+    # until = 
 
-    while times_to_scroll:
+    while since == 2016-01-01:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(4)
         times_to_scroll -= 1
 
     html = driver.page_source
-    processed_tweets = beatiful_soup_parse(html)
+    last_date = beatiful_soup_parse(html)
 
-    json_data = json.dump(processed_tweets, open('data.txt', 'w'))
 
     #close the browser instance
-    # driver.quit()
+    driver.quit()
 
-    return processed_tweets
+    print last_date
 
 
 
