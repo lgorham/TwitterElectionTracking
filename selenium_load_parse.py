@@ -18,21 +18,32 @@ def beatiful_soup_parse(webpage):
     parent_tweets = soup.findAll("div", {"class" : "content"})
 
     tweet_info = {}
+
+    #While it would be more concise to seed directly into my database in this step
+    #instead of parsing, saving as json and then iterating over the json while seeding
+    #given the time constraints of the project, the cost of having to repeat the download/parse
+    #process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
+
     for tweet in parent_tweets:
         handles = tweet.findAll("span", {"class" : "username js-action-profile-name"})
 
         for handle in handles:
             handle = handle.text
             if handle not in tweet_info:
-                tweet_info[handle] = {}
+                tweet_info[handle] = []
             tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize js-tweet-text tweet-text"})
             timestamps = tweet.findAll("a", {"class" : "tweet-timestamp js-permalink js-nav js-tooltip"})
 
         for content in tweet_contents:
-            tweet_info[handle]["tweet_body"] = content.text
+            # tweet_info[handle]["tweet_body"] = content.text
+            content_for_storage = content.text
 
         for timestamp in timestamps:
-            tweet_info[handle]["timestamp"] = timestamp['title']
+            # tweet_info[handle]["timestamp"] = timestamp['title']
+            timestamp_for_storage = timestamp['title']
+
+        tweet_storage = (content_for_storage, timestamp_for_storage)
+        tweet_info[handle].append(tweet_storage)
 
     return tweet_info
 
@@ -60,8 +71,7 @@ def load_page_and_parse():
     html = driver.page_source
     processed_tweets = beatiful_soup_parse(html)
 
-    with open('tweet_data.txt', 'w') as output:
-        json.dumps(processed_tweets, output)
+    json_data = json.dump(processed_tweets, open('data.txt', 'w'))
 
     #close the browser instance
     driver.quit()
