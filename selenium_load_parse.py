@@ -58,10 +58,11 @@ def load_page_and_parse():
     driver = webdriver.Firefox()
 
     #advanced search url - looking for tweets containing Trump OR Clinton
-    driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen&src=typd")
+    # driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen&src=typd")
+    driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen%20since%3A2016-08-08%20until%3A2016-08-09&src=typd&lang=en")
 
 
-    times_to_scroll = 3
+    times_to_scroll = 20
 
     while times_to_scroll:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -74,7 +75,7 @@ def load_page_and_parse():
     json_data = json.dump(processed_tweets, open('data.txt', 'w'))
 
     #close the browser instance
-    driver.quit()
+    # driver.quit()
 
     return processed_tweets
 
