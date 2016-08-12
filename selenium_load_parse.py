@@ -11,7 +11,7 @@ reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
 
-def beatiful_soup_parse(html):
+def beatiful_soup_parse(html, last_tweet_date):
     """
     Takes in a html from driver and parses for each individual tweet's information,
     and then writes the information to a pipe delimited file for later seeding
@@ -31,15 +31,17 @@ def beatiful_soup_parse(html):
 
     for tweet in parent_tweets:
         tweet_id = tweet['data-tweet-id']
-        handles = tweet.findAll("span", {"class" : "username js-action-profile-name"})
-        tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize js-tweet-text tweet-text"})
-        timestamps = tweet.findAll("a", {"class" : "tweet-timestamp js-permalink js-nav js-tooltip"})
-        profile_location = tweet.findAll("span", {"class" : "Tweet-geo u-floatRight js-tooltip"})
-        place_id = tweet.findAll("a", {"class": "ProfileTweet-actionButton u-linkClean js-nav js-geo-pivot-link"})
+        handles = tweet.findAll("span", {"class" : "username"})
+        tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize"})
+        timestamps = tweet.findAll("span", {"class" : "_timestamp"})
+        profile_location = tweet.findAll("span", {"class" : "Tweet-geo"})
+        place_id = tweet.findAll("a", {"class": "ProfileTweet-actionButton"})
 
         handle = handles[0].text
         content = tweet_contents[0].text
-        timestamp = timestamps[0]['title']
+
+
+        timestamp = timestamps[0]['data-time']
 
         #not all twitter users provide geotags or profile location information
         if profile_location:
@@ -51,17 +53,26 @@ def beatiful_soup_parse(html):
         else:
             place_id = ""
 
-        dataline = "|".join([handle, tweet_id, content, timestamp, profile_location, place_id])
-        data_file.write("{}\n".format(dataline))
+        date_timestamp = datetime.datetime.fromtimestamp(float(timestamp))
+
+        #only write non-repeat tweets to file
+        if date_timestamp < last_tweet_date:
+            dataline = "|".join([handle, tweet_id, content, timestamp, profile_location, place_id])
+            data_file.write("{}\n".format(dataline))
 
 
     data_file.close()
 
-    final_date = timestamp.split(" ")
-    final_date = '-'.join(final_date[-3:])
-    last_date_recorded = datetime.datetime.strptime(final_date, "%d-%b-%Y").strftime("%Y-%m-%d")
+    #timestamp is epoch time - converting to datetime object for evaluation
 
-    return last_date_recorded
+    if date_timestamp.hour <= 17:
+        until_date = date_timestamp + datetime.timedelta(days=1)
+        print until_date
+
+    else:
+        until_date = date_timestamp + datetime.timedelta(days=2)
+
+    return until_date
 
 
 
@@ -73,29 +84,26 @@ def load_page_and_parse():
 
     driver = webdriver.Firefox()
 
-    #advanced search url - looking for tweets containing Trump OR Clinton
-    # driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen&src=typd")
-    # driver.get("https://twitter.com/search?q=Trump%20OR%20Clinton%20lang%3Aen%20since%3A2016-08-08%20until%3A2016-08-09&src=typd&lang=en")
-
-
     since_date = "2016-01-01"
-    stop_date = "2016-08-02"
+    stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
+    tweets_until = stop_date.date()
     
+    #essentially just an infinite loop
     while since_date == "2016-01-01":
 
-        driver.get("https://twitter.com/search?f=tweets&q=Trump%20OR%20Clinton%20until:{}&src=typd".format(str(stop_date)))
+        driver.get("https://twitter.com/search?f=tweets&q=Trump%20OR%20Clinton%20until:{}&lang=eng&src=typd".format(tweets_until))
         # driver.get("https://twitter.com/search?f=tweets&vertical=default&q=Trump until:{}&lang=eng&src=typd".format(str(stop_date)))
-        scroll_until = 100
+        scroll_until = 2000
         while scroll_until:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             scroll_until -= 1
             time.sleep(2)
             print scroll_until
         html = driver.page_source
-        stop_date = beatiful_soup_parse(html)
-        print stop_date
-
-    #close the browser instance
+        stop_date = beatiful_soup_parse(html, stop_date)
+        tweets_until = stop_date.date()
+        print "tweets until: {}".format(tweets_until)
+        
     driver.quit()
 
     return stop_date
