@@ -20,7 +20,7 @@ def load_users():
         try:
             user = User(handle=handle)
         except UniqueViolation:
-            #uniqueness of handles enforced in class, not in loading database from file
+            #uniqueness of handles enforced in class, as same user can have multiple tweets in file
             continue
 
         db.session.add(user)

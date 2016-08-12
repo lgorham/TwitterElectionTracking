@@ -67,7 +67,6 @@ def beatiful_soup_parse(html, last_tweet_date):
 
     if date_timestamp.hour <= 17:
         until_date = date_timestamp + datetime.timedelta(days=1)
-        print until_date
 
     else:
         until_date = date_timestamp + datetime.timedelta(days=2)
@@ -91,9 +90,8 @@ def load_page_and_parse():
     #essentially just an infinite loop
     while since_date == "2016-01-01":
 
-        driver.get("https://twitter.com/search?f=tweets&q=Trump%20OR%20Clinton%20until:{}&lang=eng&src=typd".format(tweets_until))
-        # driver.get("https://twitter.com/search?f=tweets&vertical=default&q=Trump until:{}&lang=eng&src=typd".format(str(stop_date)))
-        scroll_until = 2000
+        driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
+        scroll_until = 1000
         while scroll_until:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             scroll_until -= 1
