@@ -28,6 +28,8 @@ class Tweet(db.Model):
     text = db.Column(db.String(150), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     nltk_score = db.Column(db.Integer, nullable=True)
+    profile_location = db.Column(db.String(30), nullable=True)
+    place_id = db.Column(db.Integer, nullable=True)
 
     #defining relationship to user
     user = db.relationship("User", backref=db.backref("tweets", order_by=tweet_id))
@@ -85,5 +87,20 @@ class TweetCandidate(db.Model):
     candidate = db.relationship("Candidate", backref=db.backref("tweet_candidates", order_by=tweet_candidate_id))
 
 
+def connect_to_db(app):
+    """Connect the database to our Flask app."""
 
+    # Configure to use our PstgreSQL database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///sentiments'
+    db.app = app
+    db.init_app(app)
+
+
+if __name__ == "__main__":
+    # As a convenience, if we run this module interactively, it will leave
+    # you in a state of being able to work with the database directly.
+
+    from server import app
+    connect_to_db(app)
+    print "Connected to DB."
 

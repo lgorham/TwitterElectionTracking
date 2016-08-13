@@ -16,12 +16,10 @@ def beatiful_soup_parse(html, last_tweet_date):
     Takes in a html from driver and parses for each individual tweet's information,
     and then writes the information to a pipe delimited file for later seeding
     """
-    
+
     soup = BeautifulSoup(html, 'html.parser')
 
-    # parent_tweets = soup.findAll("div", {"class" : "content"})
     parent_tweets = soup.findAll("div", {"class" : "tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet "})
-
 
     #While it would be more concise to seed directly into my database in this step
     #given the time constraints of the project, the cost of having to repeat the download/parse
@@ -39,6 +37,7 @@ def beatiful_soup_parse(html, last_tweet_date):
 
         handle = handles[0].text
         content = tweet_contents[0].text
+        content = content.replace('\n', ' ').replace('|', ' ')
 
 
         timestamp = timestamps[0]['data-time']
@@ -86,12 +85,14 @@ def load_page_and_parse():
     since_date = "2016-01-01"
     stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
     tweets_until = stop_date.date()
+
+    date_errors = open("date_errors.txt", "a")
     
     #essentially just an infinite loop
     while since_date == "2016-01-01":
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
-        scroll_until = 1000
+        scroll_until = 10
         while scroll_until:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             scroll_until -= 1
@@ -99,7 +100,13 @@ def load_page_and_parse():
             print scroll_until
         html = driver.page_source
         stop_date = beatiful_soup_parse(html, stop_date)
-        tweets_until = stop_date.date()
+        if stop_date.date() == tweets_until:
+            repeats = "|".join([str(stop_date.date())])
+            date_errors.write("{}\n".format(repeats))
+            tweets_until = stop_date - datetime.timedelta(days=1)
+            tweets_until = tweets_until.date()
+        else:
+            tweets_until = stop_date.date()
         print "tweets until: {}".format(tweets_until)
         
     driver.quit()
