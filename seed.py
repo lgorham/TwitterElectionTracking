@@ -31,31 +31,43 @@ def load_users():
 
     db.session.commit()
 
-# ADD FOREIGN KEY - USER_ID
+
 def load_tweets():
     """Load tweet data from scrapped twitter data file into database"""
 
-    User.query.delete()
+    Tweet.query.delete()
 
     for row in open("seed_data/data_file.txt"):
         row = row.rstrip()
         tweet_data = row.split("|")
         print tweet_data
-        print tweet_data[0]
+        handle = tweet_data[0]
+        print handle
 
         # handle, tweet_id, content, timestamp, profile_location, geotag = tweet_data
         # print tweet_data[0]
-        user_id = User.query.filter(User.handle==tweet_data[0]).first()
-        print "user id: {}".format(user_id)
+        user_id = User.query.filter(User.handle == handle).first()
+        print "user id: {}".format(user_id.user_id)
 
         timestamp = datetime.datetime.fromtimestamp(float(tweet_data[3]))
         if tweet_data[4] == "":
             tweet_data[4] = None
         if tweet_data[5] == "":
             tweet_data[5] = None
-        tweet = Tweet(user_id=user_id.user_id, tweet_id=tweet_data[1], text=tweet_data[2], timestamp=tweet_data[3], profile_location=tweet_data[4], place_id=tweet_data[5])
 
-        db.session.add(tweet)
+        if Tweet.query.filter(Tweet.tweet_id == tweet_data[1]):
+            print "Duplicate tweet not added: {}".format(tweet_data[1])
+            db.session.rollback()
+        else:
+            tweet = Tweet(user_id=user_id.user_id,
+                            tweet_id=tweet_data[1], 
+                            text=tweet_data[2], 
+                            timestamp=timestamp, 
+                            profile_location=tweet_data[4], 
+                            place_id=tweet_data[5])
+            db.session.add(tweet)
+            db.session.flush()
+
 
     db.session.commit()
 

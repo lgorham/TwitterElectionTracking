@@ -84,7 +84,7 @@ def load_page_and_parse():
 
     since_date = "2016-01-01"
     # stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    stop_date = "2016-06-01"
+    stop_date = datetime.datetime.strptime("2016-06-01", "%Y-%m-%d") 
     tweets_until = "2016-06-01"
     # tweets_until = stop_date.date()
 
@@ -94,12 +94,12 @@ def load_page_and_parse():
     while since_date == "2016-01-01":
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
-        scroll_until = 1500
+        scroll_until = 300
         while scroll_until:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             scroll_until -= 1
             time.sleep(2)
-            print scroll_until
+            print "Time: {}: Scroll: {}".format(datetime.datetime.now(), scroll_until)
         html = driver.page_source
         stop_date = beatiful_soup_parse(html, stop_date)
         if stop_date.date() == tweets_until:

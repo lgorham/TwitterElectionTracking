@@ -23,13 +23,13 @@ class Tweet(db.Model):
 
     __tablename__ = "tweets"
 
-    tweet_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    tweet_id = db.Column(db.String(25), unique=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
-    text = db.Column(db.String(150), nullable=False)
+    text = db.Column(db.String(300), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     nltk_score = db.Column(db.Integer, nullable=True)
     profile_location = db.Column(db.String(30), nullable=True)
-    place_id = db.Column(db.Integer, nullable=True)
+    place_id = db.Column(db.String(25), nullable=True)
 
     #defining relationship to user
     user = db.relationship("User", backref=db.backref("tweets", order_by=tweet_id))
@@ -49,7 +49,7 @@ class TweetKeyword(db.Model):
     __tablename__ = "tweet_keywords"
 
     tweet_key_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    tweet_id = db.Column(db.Integer, db.ForeignKey(Tweet.tweet_id), nullable=False)
+    tweet_id = db.Column(db.String(25), db.ForeignKey(Tweet.tweet_id), nullable=False)
     keyword_id = db.Column(db.Integer, db.ForeignKey(Keyword.keyword_id), nullable=False)
 
     #specifying relationship to tweet
@@ -76,7 +76,7 @@ class TweetCandidate(db.Model):
     __tablename__ = "tweet_candidates"
 
     tweet_candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    tweet_id = db.Column(db.Integer, db.ForeignKey(Tweet.tweet_id), nullable=False)
+    tweet_id = db.Column(db.String(25), db.ForeignKey(Tweet.tweet_id), nullable=False)
     candidate_id = db.Column(db.Integer, db.ForeignKey(Candidate.candidate_id), nullable=False)
     dominant = db.Column(db.Boolean, nullable=False)
 
