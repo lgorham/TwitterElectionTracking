@@ -84,8 +84,8 @@ def load_page_and_parse():
 
     since_date = "2016-01-01"
     # stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    stop_date = datetime.datetime.strptime("2016-06-01", "%Y-%m-%d") 
-    tweets_until = "2016-06-01"
+    stop_date = datetime.datetime.strptime("2016-05-24", "%Y-%m-%d") 
+    tweets_until = "2016-05-15"
     # tweets_until = stop_date.date()
 
     date_errors = open("date_errors.txt", "a")
