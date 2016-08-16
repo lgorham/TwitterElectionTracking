@@ -1,7 +1,18 @@
 import nltk
 from nltk.classify import NaiveBayesClassifier
+from nltk.tokenize import TweetTokenizer
 #figure out how to import custom corpus
  
+
+def tokenize(text):
+    """Tokenize text with NLTK TweetTokenizer"""
+
+    tokenizer = TweetTokenizer()
+
+    return TweetTokenizer(text)
+
+
+
 def word_features(words):
     """Takes in file and returns dictionary of words"""
 

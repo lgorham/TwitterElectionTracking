@@ -35,12 +35,29 @@ class Tweet(db.Model):
     user = db.relationship("User", backref=db.backref("tweets", order_by=tweet_id))
 
 
+class Candidate(db.Model):
+    """Table for each candidate (both for president and vp)"""
+
+    __tablename__ = "candidates"
+
+    candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(15), nullable=False, unique=True)
+    full_name = db.Column(db.String(25), nullable=False)
+    position = db.Column(db.String(2), nullable=False)
+    party_affiliation = db.Column(db.String(10), nullable=False)
+
+
 class Keyword(db.Model):
     """Specific campaign specific keywords with designated word affiliations"""
 
+    __tablename__ = "keywords"
+
     keyword_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    keyword = db.Column(db.String(10), nullable=False)
-    word_affiliation = db.Column(db.String(10), nullable=True)
+    keyword = db.Column(db.String(30), nullable=False)
+    related_candidate = db.Column(db.String(10), db.ForeignKey(Candidate.name), nullable=False)
+    connotation = db.Column(db.String(10), nullable=True)
+
+    candidate = db.relationship("Candidate", backref=db.backref("keywords"))
 
 
 class TweetKeyword(db.Model):
@@ -57,17 +74,6 @@ class TweetKeyword(db.Model):
 
     #specifying relationship to keyword
     keyword = db.relationship("Keyword", backref=db.backref("tweet_keywords", order_by=tweet_key_id))
-
-
-class Candidate(db.Model):
-    """Table for each candidate (both for president and vp)"""
-
-    __tablename__ = "candidates"
-
-    candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String(15), nullable=False)
-    party_affiliation = db.Column(db.String(10), nullable=False)
-
 
 
 class TweetCandidate(db.Model):

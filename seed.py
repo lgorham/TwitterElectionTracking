@@ -5,6 +5,11 @@ from model import connect_to_db, db
 from server import app
 import datetime
 import re
+from nltk.tokenize import TweetTokenizer
+import sys
+
+# reload(sys)  # Reload does the trick!
+# sys.setdefaultencoding('UTF8')
 
 def load_users():
     """Load twitter handles from scraped twitter data file into database"""
@@ -22,7 +27,7 @@ def load_users():
             user = User(handle=tweet_data[0])
             print user.handle
             db.session.add(user)
-            db.session.flush()
+            db.session.commit()
         except IntegrityError:
             #uniqueness of handles enforced in class, as same user can have multiple tweets in file
             print "Duplicate instance of handle, not added: {}".format(tweet_data[0])
@@ -40,14 +45,9 @@ def load_tweets():
     for row in open("seed_data/data_file.txt"):
         row = row.rstrip()
         tweet_data = row.split("|")
-        print tweet_data
         handle = tweet_data[0]
-        print handle
 
-        # handle, tweet_id, content, timestamp, profile_location, geotag = tweet_data
-        # print tweet_data[0]
         user_id = User.query.filter(User.handle == handle).first()
-        print "user id: {}".format(user_id.user_id)
 
         timestamp = datetime.datetime.fromtimestamp(float(tweet_data[3]))
         if tweet_data[4] == "":
@@ -55,31 +55,81 @@ def load_tweets():
         if tweet_data[5] == "":
             tweet_data[5] = None
 
-        if Tweet.query.filter(Tweet.tweet_id == tweet_data[1]):
-            print "Duplicate tweet not added: {}".format(tweet_data[1])
-            db.session.rollback()
-        else:
-            tweet = Tweet(user_id=user_id.user_id,
-                            tweet_id=tweet_data[1], 
-                            text=tweet_data[2], 
-                            timestamp=timestamp, 
-                            profile_location=tweet_data[4], 
-                            place_id=tweet_data[5])
-            db.session.add(tweet)
-            db.session.flush()
-
+        tweet = Tweet(user_id=user_id.user_id,
+                        tweet_id=tweet_data[1], 
+                        text=tweet_data[2], 
+                        timestamp=timestamp, 
+                        profile_location=tweet_data[4], 
+                        place_id=tweet_data[5])
+        print "Tweet added: {}".format(tweet.tweet_id)
+        db.session.add(tweet)
+        db.session.flush()
 
     db.session.commit()
 
-#Need to actually create the keyword file!
-# def load_keywords():
-#     """Load keywords from predefined set of tagged keywords"""
 
-#     User.query.delete()
+def load_candidates():
+    """Load presidential and vice presidential candidates"""
 
-#     for row in open("seed_data/keywords.txt"):
-#         row = row.rstrip()
-#         keyword, word_affiliation = Keyword(keyword=keyword, word_affiliation=word_affiliation)
+    Candidate.query.delete()
+
+    for row in open("seed_data/candidates.txt"):
+        row = row.rstrip()
+        name, full_name, position, party_affiliation = row.split("|")
+
+        candidate = Candidate(name=name, 
+                            full_name=full_name, 
+                            position=position, 
+                            party_affiliation=party_affiliation)
+
+        db.session.add(candidate)
+
+    db.session.commit()
+
+
+
+# Need to actually create the keyword file!
+def load_keywords():
+    """Load keywords from predefined set of tagged keywords"""
+
+    Keyword.query.delete()
+
+    for row in open("seed_data/keywords.txt"):
+        row = row.rstrip()
+        keyword, candidate, connotation = row.split("|")
+        keyword = Keyword(keyword=keyword, related_candidate=candidate, connotation=connotation)
+        db.session.add(keyword)
+
+    db.session.commit()
+
+
+def load_tweetkeywords():
+    """
+    Check and see which keywords are used in each tweet, and load the association
+    table linking tweets and keywords
+    """
+
+    TweetKeyword.query.delete()
+
+    tweets = Tweet.query.all()
+    keywords = db.session.query(Keyword.keyword).all()
+    # keyword_list = [str(word) for word in keywords]
+    # keyword_list = [x.encode('UTF8') for x in keywords]
+    print keywords
+    tknzr = TweetTokenizer()
+
+    for tweet in tweets:
+        tokenized_tweets = tknzr.tokenize(tweet.text)
+        for token in tokenized_tweets:
+            # print token
+            if token in keywords:
+                tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id)
+                keyword_id = Keyword.query.filter(Keyword.keyword == token)
+                tweet_keyword = TweetKeyword(keyword_id=keyword_id.keyword_id, tweet_id=tweet_id.tweet_id)
+                print "Added to TweetKeyword table: {}".format(tweet_keyword.keyword_id)
+                db.session.add(tweet_keyword)
+
+    db.session.commit()
 
 
 
@@ -95,3 +145,6 @@ if __name__ == "__main__":
     # Import different types of data
     load_users()
     load_tweets()
+    load_candidates()
+    load_keywords()
+    load_tweetkeywords()
