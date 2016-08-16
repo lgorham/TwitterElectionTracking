@@ -112,7 +112,9 @@ def load_tweetkeywords():
     TweetKeyword.query.delete()
 
     tweets = Tweet.query.all()
-    keywords = db.session.query(Keyword.keyword).all()
+    keyword_query = Keyword.query.all()
+    keywords = []
+    [keywords.append(word.keyword) for word in keyword_query]
     # keyword_list = [str(word) for word in keywords]
     # keyword_list = [x.encode('UTF8') for x in keywords]
     print keywords
@@ -121,10 +123,9 @@ def load_tweetkeywords():
     for tweet in tweets:
         tokenized_tweets = tknzr.tokenize(tweet.text)
         for token in tokenized_tweets:
-            # print token
             if token in keywords:
-                tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id)
-                keyword_id = Keyword.query.filter(Keyword.keyword == token)
+                tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
+                keyword_id = Keyword.query.filter(Keyword.keyword == token).one()
                 tweet_keyword = TweetKeyword(keyword_id=keyword_id.keyword_id, tweet_id=tweet_id.tweet_id)
                 print "Added to TweetKeyword table: {}".format(tweet_keyword.keyword_id)
                 db.session.add(tweet_keyword)
