@@ -115,9 +115,7 @@ def load_tweetkeywords():
     keyword_query = Keyword.query.all()
     keywords = []
     [keywords.append(word.keyword) for word in keyword_query]
-    # keyword_list = [str(word) for word in keywords]
-    # keyword_list = [x.encode('UTF8') for x in keywords]
-    print keywords
+
     tknzr = TweetTokenizer()
 
     for tweet in tweets:
