@@ -20,7 +20,7 @@ def load_users():
     User.query.delete()
 
     for row in open("seed_data/data_file.txt"):
-        row = row.rstrip("")
+        row = row.rstrip()
         # handle, tweet_id, content, timestamp, profile_location, geotag = row.split("|")
         tweet_data = row.split("|")
         try:
