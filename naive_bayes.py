@@ -1,4 +1,10 @@
-from sklearn.naive_bayes import MultinomialNB
+import numpy
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.naive_bayes import BernoulliNB
+from sklearn import cross_validation
+from sklearn.metrics import classification_report
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import accuracy_score
 import re
 
 
@@ -25,8 +31,8 @@ def load_training_data():
             t = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL', t)
 
             #replacing candidate names so as not to have candidate names affect classifier
-            t = row.replace('trump', 'CANDIDATE')
-            t = row.replace('clinton', 'CANDIDATE')
+            t = t.replace('trump', 'CANDIDATE')
+            t = t.replace('clinton', 'CANDIDATE')
             tweet_text.append(t)
             if tweet == positive_tweets:
                 tweet_sentiment.append('pos')
@@ -53,18 +59,35 @@ def preprocess_training():
     text, sentiment = load_training_data()
     count_vectorizer = CountVectorizer(binary=True)
     text = count_vectorizer.fit_transform(text)
-    #removing 
     tf_data = TfidfTransformer(use_idf=False).fit_transform(text)
 
-    return tf_data
+    return tf_data, sentiment
 
 
 def train_model(data, target):
-    
+    """
+    Splits the data into a training set and test set
+
+    Instatiating a Bernoulli Naive Bayes classifier, train on the training set,
+    and then evaluate the model based upon the test set
+    """
+
+    #random_state generates a pseudo-random
+    train_tweets, test_tweets, train_sentiment, test_sentiment = cross_validation.train_test_split(data, 
+                                                                                                target,
+                                                                                                test_size=0.4)
+    classifier = BernoulliNB().fit(train_tweets, train_sentiment)
+    predicted = classifier.predict(test_tweets)
+    evaluate_model(test_sentiment, predicted)
+
+def evaluate_model(true_sentiment, predicted_sentiment):
+    print classification_report(true_sentiment, predicted_sentiment)
+    print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
 
 
 
 
 if __name__ == "__main__":
-    load_training_data()
+    tf_data, sentiment = preprocess_training()
+    train_model(tf_data, sentiment)
 
