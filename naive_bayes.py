@@ -1,11 +1,13 @@
 import numpy
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn import cross_validation
 from sklearn.metrics import classification_report
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import accuracy_score
 import re
+import pickle
+
 
 
 def load_training_data():
@@ -57,11 +59,18 @@ def preprocess_training():
     """
 
     text, sentiment = load_training_data()
-    count_vectorizer = CountVectorizer(binary=True)
-    text = count_vectorizer.fit_transform(text)
-    tf_data = TfidfTransformer(use_idf=False).fit_transform(text)
 
-    return tf_data, sentiment
+    #add bigrams Tfidf vs. Count, Bernoulli vs. Multinomial
+    #precision vs. recall
+    vectorizer = TfidfVectorizer(ngram_range=(2,2))
+    text_matrix = vectorizer.fit_transform(text)
+
+    #pickling the vectorizer
+    pickle_file = open('vectorizer.pickle', 'wb')
+    pickle.dump(vectorizer, pickle_file)
+    pickle_file.close()
+
+    return text_matrix, sentiment
 
 
 def train_model(data, target):
@@ -72,7 +81,8 @@ def train_model(data, target):
     and then evaluate the model based upon the test set
     """
 
-    #random_state generates a pseudo-random
+    #stratification for dividing preclassified tweets into homogenous subgroups before
+    #sampling in order to improve the representativeness of the sampling
     train_tweets, test_tweets, train_sentiment, test_sentiment = cross_validation.train_test_split(data, 
                                                                                                 target,
                                                                                                 test_size=0.4)
@@ -80,14 +90,54 @@ def train_model(data, target):
     predicted = classifier.predict(test_tweets)
     evaluate_model(test_sentiment, predicted)
 
+    #pickling the classifier
+    pickle_file = open('nb_classifier.pickle', 'wb')
+    pickle.dump(classifier, pickle_file)
+    pickle_file.close()
+
+    return classifier
+
+    #cross-validation
+
+
 def evaluate_model(true_sentiment, predicted_sentiment):
-    print classification_report(true_sentiment, predicted_sentiment)
-    print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
+    """Prints out evaluation statistics from scikits library"""
+
+    # print classification_report(true_sentiment, predicted_sentiment)
+    # print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
+
+
+def run_classifier(to_classify):
+    """for importing into seed file to classify full database"""
+
+    pickle_file = open('nb_classifier.pickle', 'rb')
+    classifier = pickle.load(pickle_file)
+    pickle_file.close()
+
+    pickle_file = open('vectorizer.pickle', 'rb')
+    vectorizer = pickle.load(pickle_file)
+    pickle_file.close()
+
+
+    feature_matrix = vectorizer.transform(to_classify)
+    # print "Count Vectorizer: {}".format(to_classify)
+
+    sentiment_classification = classifier.predict(feature_matrix)
+
+    print sentiment_classification
+    return sentiment_classification
+
 
 
 
 
 if __name__ == "__main__":
+
+    sample_tweets = ["if you vote or support Hillary Clinton your unamerican and part of the problem", 
+    "Happy Anniversary 19th Amendment! In your honor I'm going to go volunteer for the @HillaryClinton campaign tonight. #ImWithHer"]
+
     tf_data, sentiment = preprocess_training()
-    train_model(tf_data, sentiment)
+    classifier = train_model(tf_data, sentiment)
+
+    run_classifier(sample_tweets)
 

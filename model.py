@@ -27,7 +27,7 @@ class Tweet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
     text = db.Column(db.String(300), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
-    nltk_score = db.Column(db.Integer, nullable=True)
+    naive_bayes = db.Column(db.String(5), nullable=True)
     profile_location = db.Column(db.String(30), nullable=True)
     place_id = db.Column(db.String(25), nullable=True)
 
@@ -91,6 +91,10 @@ class TweetCandidate(db.Model):
 
     #specifying relationship to candidate
     candidate = db.relationship("Candidate", backref=db.backref("tweet_candidates", order_by=tweet_candidate_id))
+
+
+##table that checks when the last time you collected data would be
+##if it has been long enough, starts collecting data
 
 
 def connect_to_db(app):

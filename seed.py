@@ -2,6 +2,7 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from model import User, Tweet, Keyword, TweetKeyword, Candidate, TweetCandidate
 from model import connect_to_db, db
+from naive_bayes import run_classifier
 from server import app
 import datetime
 import re
@@ -55,12 +56,17 @@ def load_tweets():
         if tweet_data[5] == "":
             tweet_data[5] = None
 
+        clean_tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL', tweet_data[2])
+        print "Cleaned Tweet: {}".format(clean_tweet)
+        nb_classification = run_classifier([clean_tweet])
+
         tweet = Tweet(user_id=user_id.user_id,
                         tweet_id=tweet_data[1], 
-                        text=tweet_data[2], 
+                        text=clean_tweet, 
                         timestamp=timestamp, 
                         profile_location=tweet_data[4], 
-                        place_id=tweet_data[5])
+                        place_id=tweet_data[5],
+                        naive_bayes=nb_classification[0])
         print "Tweet added: {}".format(tweet.tweet_id)
         db.session.add(tweet)
         db.session.flush()

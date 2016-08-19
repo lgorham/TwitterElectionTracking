@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, session, request
 from flask_debugtoolbar import DebugToolbarExtension
+import jinja2
 
 
 app = Flask(__name__)
@@ -14,4 +15,4 @@ app.secret_key = "h65Tgx4RTzS21"
 def index_page():
     """Data visualization page"""
 
-    pass
+    render_template(homepage.html)
