@@ -27,6 +27,7 @@ def load_training_data():
     positive_tweets = open("seed_data/positive_training_tweets.txt")
     negative_tweets = open("seed_data/negative_training_tweets.txt")
     tweets = [positive_tweets, negative_tweets]
+
     for tweet in tweets:
         for t in tweet:
             t = t.lower().rstrip()
@@ -36,12 +37,11 @@ def load_training_data():
             t = t.replace('trump', 'CANDIDATE')
             t = t.replace('clinton', 'CANDIDATE')
             tweet_text.append(t)
+
             if tweet == positive_tweets:
                 tweet_sentiment.append('pos')
             if tweet == negative_tweets:
                 tweet_sentiment.append('neg')
-
-
 
     return tweet_text, tweet_sentiment
 
@@ -62,7 +62,10 @@ def preprocess_training():
 
     #add bigrams Tfidf vs. Count, Bernoulli vs. Multinomial
     #precision vs. recall
-    vectorizer = TfidfVectorizer(ngram_range=(2,2))
+
+    #tried implementing n-grams - didn't see improvement in precision or recall
+    #ngram_range=(2,4)
+    vectorizer = TfidfVectorizer()
     text_matrix = vectorizer.fit_transform(text)
 
     #pickling the vectorizer
@@ -83,12 +86,12 @@ def train_model(data, target):
 
     #stratification for dividing preclassified tweets into homogenous subgroups before
     #sampling in order to improve the representativeness of the sampling
-    train_tweets, test_tweets, train_sentiment, test_sentiment = cross_validation.train_test_split(data, 
+    train_tweets, validation_tweets, train_sentiment, validation_sentiment = cross_validation.train_test_split(data, 
                                                                                                 target,
                                                                                                 test_size=0.4)
     classifier = BernoulliNB().fit(train_tweets, train_sentiment)
-    predicted = classifier.predict(test_tweets)
-    evaluate_model(test_sentiment, predicted)
+    predicted = classifier.predict(validation_tweets)
+    evaluate_model(validation_sentiment, predicted)
 
     #pickling the classifier
     pickle_file = open('nb_classifier.pickle', 'wb')
@@ -103,8 +106,8 @@ def train_model(data, target):
 def evaluate_model(true_sentiment, predicted_sentiment):
     """Prints out evaluation statistics from scikits library"""
 
-    # print classification_report(true_sentiment, predicted_sentiment)
-    # print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
+    print classification_report(true_sentiment, predicted_sentiment)
+    print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
 
 
 def run_classifier(to_classify):
@@ -120,7 +123,7 @@ def run_classifier(to_classify):
 
 
     feature_matrix = vectorizer.transform(to_classify)
-    # print "Count Vectorizer: {}".format(to_classify)
+    print "Count Vectorizer: {}".format(to_classify)
 
     sentiment_classification = classifier.predict(feature_matrix)
 
