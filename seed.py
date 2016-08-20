@@ -30,6 +30,7 @@ def load_users():
             db.session.add(user)
             db.session.commit()
         except IntegrityError:
+            
             #uniqueness of handles enforced in class, as same user can have multiple tweets in file
             print "Duplicate instance of handle, not added: {}".format(tweet_data[0])
             db.session.rollback()

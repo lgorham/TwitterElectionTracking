@@ -15,4 +15,6 @@ app.secret_key = "h65Tgx4RTzS21"
 def index_page():
     """Data visualization page"""
 
-    render_template(homepage.html)
+    tweets = Tweets.query.all()
+
+    render_template(homepage.html, tweets=tweets)
