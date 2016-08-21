@@ -73,6 +73,7 @@ def preprocess_training():
     pickle.dump(vectorizer, pickle_file)
     pickle_file.close()
 
+    print text_matrix
     return text_matrix, sentiment
 
 
@@ -86,6 +87,7 @@ def train_model(data, target):
 
     #stratification for dividing preclassified tweets into homogenous subgroups before
     #sampling in order to improve the representativeness of the sampling
+    #
     train_tweets, validation_tweets, train_sentiment, validation_sentiment = cross_validation.train_test_split(data, 
                                                                                                 target,
                                                                                                 test_size=0.4)

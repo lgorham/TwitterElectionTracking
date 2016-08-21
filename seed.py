@@ -30,7 +30,7 @@ def load_users():
             db.session.add(user)
             db.session.commit()
         except IntegrityError:
-            
+
             #uniqueness of handles enforced in class, as same user can have multiple tweets in file
             print "Duplicate instance of handle, not added: {}".format(tweet_data[0])
             db.session.rollback()
@@ -57,7 +57,7 @@ def load_tweets():
         if tweet_data[5] == "":
             tweet_data[5] = None
 
-        clean_tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL', tweet_data[2])
+        clean_tweet = tweet_data[2].replace('((www\.[^\s]+)|(https?://[^\s]+))','')
         print "Cleaned Tweet: {}".format(clean_tweet)
         nb_classification = run_classifier([clean_tweet])
 
@@ -127,6 +127,7 @@ def load_tweetkeywords():
 
     for tweet in tweets:
         tokenized_tweets = tknzr.tokenize(tweet.text)
+
         for token in tokenized_tweets:
             if token in keywords:
                 tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
@@ -138,7 +139,24 @@ def load_tweetkeywords():
     db.session.commit()
 
 
+# def load_tweetcandidate():
+#     """Check and see which candidates are referenced in the tweet"""
 
+#     tweets = Tweet.query.all()
+#     candidate_query = Candidate.query.all()
+
+#     canidates = []
+#     [candidates.append(candidate.full_name[0], candidate.full_name[1]) for candidate in candidate_query]
+
+#     tknzr = TweetTokenizer()
+
+#     for tweet in tweets:
+#         tokenized_tweets = tknzr.tokenize(tweet.text)
+
+#         for token in tokenized_tweets:
+#             if token in candidates:
+#                 tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
+#                 candidate_id = Candidate.query.filter(Candidate.full_name == )
 
 
 

@@ -18,6 +18,7 @@ class User(db.Model):
     handle = db.Column(db.String(80), nullable=False, unique=True)
 
 
+
 class Tweet(db.Model):
     """Individual tweet"""
 
@@ -35,6 +36,7 @@ class Tweet(db.Model):
     user = db.relationship("User", backref=db.backref("tweets", order_by=tweet_id))
 
 
+
 class Candidate(db.Model):
     """Table for each candidate (both for president and vp)"""
 
@@ -45,6 +47,7 @@ class Candidate(db.Model):
     full_name = db.Column(db.String(25), nullable=False)
     position = db.Column(db.String(2), nullable=False)
     party_affiliation = db.Column(db.String(10), nullable=False)
+
 
 
 class Keyword(db.Model):
@@ -58,6 +61,7 @@ class Keyword(db.Model):
     connotation = db.Column(db.String(10), nullable=True)
 
     candidate = db.relationship("Candidate", backref=db.backref("keywords"))
+
 
 
 class TweetKeyword(db.Model):
@@ -76,6 +80,7 @@ class TweetKeyword(db.Model):
     keyword = db.relationship("Keyword", backref=db.backref("tweet_keywords", order_by=tweet_key_id))
 
 
+
 class TweetCandidate(db.Model):
     """Association table joining tweets and the candidates referenced in the tweet"""
 
@@ -91,6 +96,7 @@ class TweetCandidate(db.Model):
 
     #specifying relationship to candidate
     candidate = db.relationship("Candidate", backref=db.backref("tweet_candidates", order_by=tweet_candidate_id))
+
 
 
 ##table that checks when the last time you collected data would be
