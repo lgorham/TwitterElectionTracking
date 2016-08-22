@@ -112,6 +112,7 @@ def evaluate_model(true_sentiment, predicted_sentiment):
     print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
 
 
+
 def run_classifier(to_classify):
     """for importing into seed file to classify full database"""
 

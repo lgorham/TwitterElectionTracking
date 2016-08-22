@@ -49,6 +49,30 @@ class Candidate(db.Model):
     party_affiliation = db.Column(db.String(10), nullable=False)
 
 
+    # def neg_pos(self):
+    #     """
+    #     Evaluate the number of positive and negative tweets connected with the
+    #     Candidate through the association table TweetCandidate.
+
+    #     Returns a json object for analysis with D3
+    #     """
+
+    #     total_tweets = len(self.tweet_candidates)
+    #     neg = Tweet.query.filter(Tweet.tweet_id == self.tweet_candidates.tweet_id)
+    #     pos = 0
+    #     # for tweet in self.tweet_candidates:
+    #     #     if tweet.tweet.naive_bayes == 'pos':
+    #     #         pos += 1
+    #     #     else:
+    #     #         neg += 1
+
+    #     summarize_sentiment = {self.name {total: len(self.tweet_candidates),
+    #                                     negative: neg,
+    #                                     positive: pos}}
+
+    #     return jsonify(summarize_sentiment)
+
+
 
 class Keyword(db.Model):
     """Specific campaign specific keywords with designated word affiliations"""

@@ -62,8 +62,6 @@ def beatiful_soup_parse(html, last_tweet_date):
 
     data_file.close()
 
-    #timestamp is epoch time - converting to datetime object for evaluation
-
     if date_timestamp.hour <= 17:
         until_date = date_timestamp + datetime.timedelta(days=1)
 
@@ -82,16 +80,16 @@ def load_page_and_parse():
 
     driver = webdriver.Firefox()
 
-    since_date = "2016-01-01"
     # stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    stop_date = datetime.datetime.strptime("2016-07-09", "%Y-%m-%d") 
-    tweets_until = "2016-07-09"
+    stop_date = datetime.datetime.strptime("2016-07-04", "%Y-%m-%d") 
+    tweets_until = "2016-07-04"
     # tweets_until = stop_date.date()
 
     date_errors = open("date_errors.txt", "a")
     
-    #essentially just an infinite loop
-    while since_date == "2016-01-01":
+    date = 3
+    #just an infinite loop
+    while date:
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
         scroll_until = 400
@@ -116,6 +114,8 @@ def load_page_and_parse():
 
         else:
             tweets_until = stop_date.date()
+
+        date -= 1
 
         print "tweets until: {}".format(tweets_until)
         

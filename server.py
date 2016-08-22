@@ -13,14 +13,9 @@ app.secret_key = "h65Tgx4RTzS21"
 def homepage():
     """Data visualization page"""
 
-    tweets = {}
-    for tweet in Tweet.query.all():
-        tweets[tweet.tweet_id] = {
-            
-        }
 
 
-    return render_template("homepage.html", data=data)
+    return render_template("homepage.html")
 
 
 
