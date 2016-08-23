@@ -156,7 +156,7 @@ def load_tweetkeywords():
 #         for token in tokenized_tweets:
 #             if token in candidates:
 #                 tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
-#                 candidate_id = Candidate.query.filter(Candidate.full_name == )
+#                 candidate_id = Candidate.query.filter(Candidate.full_name == tweet.candidates)
 
 
 

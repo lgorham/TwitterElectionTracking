@@ -24,8 +24,12 @@ class Tweet(db.Model):
 
     __tablename__ = "tweets"
 
-    tweet_id = db.Column(db.String(25), unique=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
+    tweet_id = db.Column(db.String(25), 
+                        unique=True, 
+                        primary_key=True)
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey(User.user_id), 
+                        nullable=False)
     text = db.Column(db.String(300), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     naive_bayes = db.Column(db.String(5), nullable=True)
@@ -34,6 +38,14 @@ class Tweet(db.Model):
 
     #defining relationship to user
     user = db.relationship("User", backref=db.backref("tweets", order_by=tweet_id))
+
+    candidates = db.relationship("Candidate", 
+                                secondary="tweet_candidates",
+                                backref="candidates")
+
+    keywords = db.relationship("Keyword",
+                                secondary="tweet_keywords",
+                                backref="keywords")
 
 
 
@@ -48,29 +60,9 @@ class Candidate(db.Model):
     position = db.Column(db.String(2), nullable=False)
     party_affiliation = db.Column(db.String(10), nullable=False)
 
-
-    # def neg_pos(self):
-    #     """
-    #     Evaluate the number of positive and negative tweets connected with the
-    #     Candidate through the association table TweetCandidate.
-
-    #     Returns a json object for analysis with D3
-    #     """
-
-    #     total_tweets = len(self.tweet_candidates)
-    #     neg = Tweet.query.filter(Tweet.tweet_id == self.tweet_candidates.tweet_id)
-    #     pos = 0
-    #     # for tweet in self.tweet_candidates:
-    #     #     if tweet.tweet.naive_bayes == 'pos':
-    #     #         pos += 1
-    #     #     else:
-    #     #         neg += 1
-
-    #     summarize_sentiment = {self.name {total: len(self.tweet_candidates),
-    #                                     negative: neg,
-    #                                     positive: pos}}
-
-    #     return jsonify(summarize_sentiment)
+    tweets = db.relationship("Tweet",
+                            secondary="tweet_candidates",
+                            backref="tweets")
 
 
 
@@ -79,12 +71,20 @@ class Keyword(db.Model):
 
     __tablename__ = "keywords"
 
-    keyword_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    keyword_id = db.Column(db.Integer, 
+                            autoincrement=True, 
+                            primary_key=True)
     keyword = db.Column(db.String(30), nullable=False)
-    related_candidate = db.Column(db.String(10), db.ForeignKey(Candidate.name), nullable=False)
+    related_candidate = db.Column(db.String(10), 
+                                db.ForeignKey(Candidate.name), 
+                                nullable=False)
     connotation = db.Column(db.String(10), nullable=True)
 
     candidate = db.relationship("Candidate", backref=db.backref("keywords"))
+
+    tweets = db.relationship("Tweet",
+                            secondary="tweet_keywords",
+                            backref="tweets")
 
 
 
@@ -97,12 +97,6 @@ class TweetKeyword(db.Model):
     tweet_id = db.Column(db.String(25), db.ForeignKey(Tweet.tweet_id), nullable=False)
     keyword_id = db.Column(db.Integer, db.ForeignKey(Keyword.keyword_id), nullable=False)
 
-    #specifying relationship to tweet
-    tweet = db.relationship("Tweet", backref=db.backref("tweet_keywords", order_by=tweet_key_id))
-
-    #specifying relationship to keyword
-    keyword = db.relationship("Keyword", backref=db.backref("tweet_keywords", order_by=tweet_key_id))
-
 
 
 class TweetCandidate(db.Model):
@@ -113,13 +107,6 @@ class TweetCandidate(db.Model):
     tweet_candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     tweet_id = db.Column(db.String(25), db.ForeignKey(Tweet.tweet_id), nullable=False)
     candidate_id = db.Column(db.Integer, db.ForeignKey(Candidate.candidate_id), nullable=False)
-    dominant = db.Column(db.Boolean, nullable=False)
-
-    #specifying relationship to tweet
-    tweet = db.relationship("Tweet", backref=db.backref("tweet_candidates", order_by=tweet_candidate_id))
-
-    #specifying relationship to candidate
-    candidate = db.relationship("Candidate", backref=db.backref("tweet_candidates", order_by=tweet_candidate_id))
 
 
 
