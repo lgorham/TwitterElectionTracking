@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = "h65Tgx4RTzS21"
 
 
-def load_data(filename):
+def load_sentiment_data(filename):
     """Load file with sentiment data for a given candidate"""
 
     dates = []
@@ -26,6 +26,20 @@ def load_data(filename):
         neg_scores.append(items[2])
 
     return [dates, pos_scores, neg_scores]
+
+def load_location_data(filename):
+    """Load file with location based data"""
+
+    location_data = []
+
+    for row in open(filename):
+        row = row.rstrip()
+        items = row.split("|")
+        coordinates = [float(items[0]), float(items[1])]
+        tweets = float(items[2])
+        location_data.append((coordinates, tweets))
+
+    return location_data
 
 
 def pos_line_chart(candidate):
@@ -121,7 +135,7 @@ def load_csv():
     datasets = []
 
     for option in options.keys():
-        dates, pos_nums, neg_nums = load_data(option)
+        dates, pos_nums, neg_nums = load_sentiment_data(option)
 
         # datetime_dates = []
         # for date in dates:
@@ -149,11 +163,31 @@ def load_csv():
 def load_maps_data():
     """Create json object for google maps API"""
 
-    test_json = { "type": "FeatureCollection", 
-                "features": [{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
-                "properties": {"prop0": "value0"}
-                }]
+    location_data = load_location_data("seed_data/location_sums.txt")
+
+    json_list = []
+
+    for location in location_data:
+        print location[0][0]
+        location_specs = {"type": "Feature",
+                        "geometry": {"type": "Point", "coordinates": [location[0][0], location[0][1]]}, 
+                        "properties": {"tweets": float(location[1])}
+                        }
+
+        json_list.append(location_specs)
+        print location_specs
+
+    test_json = {
+                "type": "FeatureCollection", 
+                "features": json_list
                 }
+
+    # test_json = { "type": "FeatureCollection", 
+    #             "features": [{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [-122.27, 37.87]},
+    #             "properties": {"tweets": 4}
+    #             }]
+    #             }
+                
 
     return jsonify(test_json)
 
