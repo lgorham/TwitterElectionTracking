@@ -145,6 +145,19 @@ def load_csv():
     return jsonify(json_test)
 
 
+@app.route("/google.json")
+def load_maps_data():
+    """Create json object for google maps API"""
+
+    test_json = { "type": "FeatureCollection", 
+                "features": [{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+                "properties": {"prop0": "value0"}
+                }]
+                }
+
+    return jsonify(test_json)
+
+
 
 if __name__ == "__main__":
     app.debug = True
