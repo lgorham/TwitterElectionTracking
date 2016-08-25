@@ -81,8 +81,8 @@ def load_page_and_parse():
     driver = webdriver.Firefox()
 
     # stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    stop_date = datetime.datetime.strptime("2016-04-09", "%Y-%m-%d") 
-    tweets_until = "2016-04-09"
+    stop_date = datetime.datetime.strptime("2016-03-21", "%Y-%m-%d") 
+    tweets_until = "2016-03-21"
     # tweets_until = stop_date.date()
 
     date_errors = open("date_errors.txt", "a")

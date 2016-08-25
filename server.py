@@ -34,10 +34,8 @@ def load_location_data(filename):
 
     for row in open(filename):
         row = row.rstrip()
-        items = row.split("|")
-        coordinates = [float(items[0]), float(items[1])]
-        tweets = float(items[2])
-        location_data.append((coordinates, tweets))
+        lat, lng, tweets, sentiment = row.split("|")
+        location_data.append(({"lat" : float(lat), "lng" : float(lng)}, float(tweets), sentiment))
 
     return location_data
 
@@ -137,10 +135,6 @@ def load_csv():
     for option in options.keys():
         dates, pos_nums, neg_nums = load_sentiment_data(option)
 
-        # datetime_dates = []
-        # for date in dates:
-        #     date = datetime.strptime(date, "%Y-%m-%d")
-
         pos_json_object = pos_line_chart(options[option]["candidate"])
         pos_json_object["label"] = options[option]["pos_label"]
         pos_json_object["data"] = pos_nums
@@ -165,29 +159,21 @@ def load_maps_data():
 
     location_data = load_location_data("seed_data/location_sums.txt")
 
+    sentiment_color = {"Trump_neg" : "rgba(182,6,6,1)", "Trump_pos" : "rgba(253, 175, 175,1)",
+                        "Clinton_neg" : "rgba(55,7,247,1)", "Clinton_pos" : "rgba(143, 211, 228,1)"}
+
     json_list = []
 
     for location in location_data:
-        print location[0][0]
-        location_specs = {"type": "Feature",
-                        "geometry": {"type": "Point", "coordinates": [location[0][0], location[0][1]]}, 
-                        "properties": {"tweets": float(location[1])}
-                        }
+        print location[0]
+        location_specs = {"coordinates": location[0],
+                        "num_tweets": float(location[1]), 
+                        "color": sentiment_color[location[2]]}
 
         json_list.append(location_specs)
-        print location_specs
 
-    test_json = {
-                "type": "FeatureCollection", 
-                "features": json_list
-                }
+    test_json = {"location_data" : json_list}
 
-    # test_json = { "type": "FeatureCollection", 
-    #             "features": [{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [-122.27, 37.87]},
-    #             "properties": {"tweets": 4}
-    #             }]
-    #             }
-                
 
     return jsonify(test_json)
 
