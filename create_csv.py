@@ -19,13 +19,16 @@ def sort_by_datetime():
     date_sorted = {}
     options = {"Clinton" : { "neg" : 0, "pos" : 0}, 
             "Trump" : {"neg" : 0, "pos" : 0},
-            "Both" : {"neg" : 0}, "pos" : 0}
+            "Both" : {"neg" : 0, "pos" : 0}}
 
     tweets = Tweet.query.all()
 
     for tweet in tweets:
-        date_sorted[tweet.datetime] = date_sorted.get(tweet.datetime, options)
-        date_sorted[tweet.datetime][tweet.candidates][tweet.naive_bayes] += 1
+        date_string = tweet.timestamp.strftime('%Y/%m/%d')
+        date_sorted[date_string] = date_sorted.get(date_string, options)
+        print tweet.candidates[0].name
+        print date_sorted[date_string][tweet.candidates[0].name]
+        date_sorted[date_string][tweet.candidates[0].name][tweet.naive_bayes] += 1
 
     return date_sorted
 
@@ -66,23 +69,35 @@ def write_csv():
 
     all_dates = sort_by_datetime()
 
-    csvwriter = csv.writer(csvfile, delimiter=' ',
-                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    clinton_file = open("clinton_data.txt", "w")
+    trump_file = open("trump_data.txt", "w")
+    both_file = open("both_data.txt", "w")
 
-    for date in all_dates:
-        csvwriter.writerow(date,
-                            date["Clinton"]["neg"], 
-                            date["Clinton"]["pos"],
-                            date["Trump"]["neg"],
-                            date["Trump"]["pos"],
-                            date["Both"]["neg"],
-                            date["Both"]["pos"]
-            ])
 
-    csvfile.close()
+    for date, counts in all_dates.iteritems():
+        clinton_neg = counts["Clinton"]["pos"]
+        clinton_pos = counts["Clinton"]["neg"]
+        clinton_data = "|".join([date, str(clinton_neg), str(clinton_pos)])
+        clinton_file.write("{}\n".format(clinton_data))
+
+        trump_neg = counts["Trump"]["neg"]
+        trump_pos = counts["Trump"]["pos"]
+        trump_data = "|".join([date, str(trump_neg), str(trump_pos)])
+        trump_file.write("{}\n".format(trump_data))
+
+        both_neg = counts["Both"]["neg"]
+        both_pos = counts["Both"]["pos"]
+        both_data = "|".join([date, str(both_neg), str(both_pos)])
+        both_file.write("{}\n".format(both_data))
+
+    clinton_file.close()
+    trump_file.close()
+    both_file.close()
+
+    print "File complete"
 
 
 if __name__ == '__main__':
 
     connect_to_db(app)
-    export_to_csv()
+    write_csv()

@@ -159,7 +159,7 @@ def load_maps_data():
 
     location_data = load_location_data("seed_data/location_sums.txt")
 
-    sentiment_color = {"Trump_neg" : "rgba(182,6,6,1)", "Trump_pos" : "rgba(253, 175, 175,1)",
+    sentiment_color = {"Trump_neg" : "rgba(253,0,0,1)", "Trump_pos" : "rgba(255,199,199,1)",
                         "Clinton_neg" : "rgba(55,7,247,1)", "Clinton_pos" : "rgba(143, 211, 228,1)"}
 
     json_list = []

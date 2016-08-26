@@ -9,8 +9,8 @@ import re
 from nltk.tokenize import TweetTokenizer
 import sys
 
-# reload(sys)  # Reload does the trick!
-# sys.setdefaultencoding('UTF8')
+reload(sys)  # Reload does the trick!
+sys.setdefaultencoding('UTF8')
 
 def load_users():
     """Load twitter handles from scraped twitter data file into database"""
@@ -57,7 +57,7 @@ def load_tweets():
         if tweet_data[5] == "":
             tweet_data[5] = None
 
-        clean_tweet = tweet_data[2].replace('((www\.[^\s]+)|(https?://[^\s]+))','')
+        clean_tweet = re.sub(r"http\S+", "", tweet_data[2])
         print "Cleaned Tweet: {}".format(clean_tweet)
         nb_classification = run_classifier([clean_tweet])
 
@@ -139,24 +139,46 @@ def load_tweetkeywords():
     db.session.commit()
 
 
-# def load_tweetcandidate():
-#     """Check and see which candidates are referenced in the tweet"""
+def load_tweetcandidate():
+    """Check and see which candidates are referenced in the tweet"""
 
-#     tweets = Tweet.query.all()
-#     candidate_query = Candidate.query.all()
+    tweets = Tweet.query.all()
 
-#     canidates = []
-#     [candidates.append(candidate.full_name[0], candidate.full_name[1]) for candidate in candidate_query]
+    Clinton = set(["hillary", "clinton", "hilary"])
+    Trump = set(["trump", "donald"])
 
-#     tknzr = TweetTokenizer()
+    tknzr = TweetTokenizer()
 
-#     for tweet in tweets:
-#         tokenized_tweets = tknzr.tokenize(tweet.text)
+    for tweet in tweets:
+        tokenized_tweet = tknzr.tokenize(tweet.text)
+        clinton_count = 0
+        trump_count = 0
 
-#         for token in tokenized_tweets:
-#             if token in candidates:
-#                 tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
-#                 candidate_id = Candidate.query.filter(Candidate.full_name == tweet.candidates)
+        for token in tokenized_tweet:
+            token = token.lower()
+            if token in Clinton:
+                clinton_count += 1
+            elif token in Trump:
+                trump_count += 1
+
+            if trump_count > 0 and clinton_count > 0:
+                tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
+                candidate_id = Candidate.query.filter(Candidate.name == 'Both').one()
+                tweet_candidate = TweetCandidate(candidate_id=candidate_id.candidate_id, tweet_id=tweet_id.tweet_id)
+                db.session.add(tweet_candidate)
+                break
+        
+        if trump_count > 0:
+                candidate_id = Candidate.query.filter(Candidate.name == 'Trump').one()
+        if clinton_count > 0:
+                candidate_id = Candidate.query.filter(Candidate.name == 'Clinton').one()
+
+        tweet_id = Tweet.query.filter(Tweet.tweet_id == tweet.tweet_id).one()
+        tweet_candidate = TweetCandidate(candidate_id=candidate_id.candidate_id, tweet_id=tweet_id.tweet_id)
+        db.session.add(tweet_candidate)
+            
+
+    db.session.commit()
 
 
 
@@ -172,3 +194,4 @@ if __name__ == "__main__":
     load_candidates()
     load_keywords()
     load_tweetkeywords()
+    load_tweetcandidate()

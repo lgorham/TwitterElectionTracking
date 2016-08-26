@@ -30,7 +30,7 @@ class Tweet(db.Model):
     user_id = db.Column(db.Integer, 
                         db.ForeignKey(User.user_id), 
                         nullable=False)
-    text = db.Column(db.String(300), nullable=False)
+    text = db.Column(db.String(400), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     naive_bayes = db.Column(db.String(5), nullable=True)
     profile_location = db.Column(db.String(30), nullable=True)
@@ -41,7 +41,7 @@ class Tweet(db.Model):
 
     candidates = db.relationship("Candidate", 
                                 secondary="tweet_candidates",
-                                backref="candidates")
+                                backref="candidate")
 
     keywords = db.relationship("Keyword",
                                 secondary="tweet_keywords",
@@ -82,9 +82,9 @@ class Keyword(db.Model):
 
     candidate = db.relationship("Candidate", backref=db.backref("keywords"))
 
-    tweets = db.relationship("Tweet",
-                            secondary="tweet_keywords",
-                            backref="tweets")
+    # tweets = db.relationship("Tweet",
+    #                         secondary="tweet_keywords",
+    #                         backref="tweets")
 
 
 
