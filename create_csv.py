@@ -47,16 +47,23 @@ def sort_location():
     location_sorted = {}
     options = {"Clinton" : { "neg" : 0, "pos" : 0}, 
             "Trump" : {"neg" : 0, "pos" : 0},
-            "Both" : {"neg" : 0}, "pos" : 0}
+            "Both" : {"neg" : 0, "pos" : 0}}
 
-    location_tweets = Tweet.query.filter(Tweet.profile_location != None)
+    location_tweets = Tweet.query.filter(Tweet.profile_location != None).all()
 
-    for tweet in location_tweets:
-        geocoded_location = geocoder.google(tweet.profile_location)
-        location_sorted[geocoded_location] = date_sorted.get(geocoded_location, options)
-        location_sorted[geocoded_location][tweet.candidates][tweet.naive_bayes] += 1
+    for tweet in enumerate(location_tweets):
+        location = str(tweet.profile_location)
+        print "Start of loop: {}".format(location_sorted.keys())
+        location_sorted[location] = location_sorted.get(location, options)
+        print "After get method: {}".format(location_sorted.keys())
+        print "After get method full dict: {}".format(location_sorted)
+        location_sorted[location][tweet.candidates[0].name][tweet.naive_bayes] += 1
+        print "Full dict after adding + 1: {}".format(location_sorted)
 
-    return location_tweets
+
+
+    # print location_sorted
+    return location_sorted
 
 
 
@@ -100,4 +107,5 @@ def write_csv():
 if __name__ == '__main__':
 
     connect_to_db(app)
-    write_csv()
+    # write_csv()
+    sort_location()
