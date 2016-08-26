@@ -3,8 +3,9 @@
 from flask import Flask, render_template, session, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 import jinja2
-from model import Tweet, connect_to_db
+from model import Tweet, connect_to_db, db
 from datetime import datetime
+import sqlalchemy
 
 
 app = Flask(__name__)
@@ -27,6 +28,12 @@ def load_sentiment_data(filename):
 
     return [dates, pos_scores, neg_scores]
 
+
+
+################################################################################
+
+
+
 def load_location_data(filename):
     """Load file with location based data"""
 
@@ -38,6 +45,9 @@ def load_location_data(filename):
         location_data.append(({"lat" : float(lat), "lng" : float(lng)}, float(tweets), sentiment))
 
     return location_data
+
+
+################################################################################
 
 
 def pos_line_chart(candidate):
@@ -77,6 +87,13 @@ def pos_line_chart(candidate):
     return chart_specs
 
 
+
+
+################################################################################
+
+
+
+
 def neg_line_chart(candidate):
     """Generate a json object for sentiment line chart"""
 
@@ -113,6 +130,9 @@ def neg_line_chart(candidate):
     return chart_specs
 
 
+################################################################################
+
+
 
 @app.route("/")
 def homepage():
@@ -120,6 +140,8 @@ def homepage():
 
     return render_template("homepage_charts.html")
 
+
+################################################################################
 
 
 @app.route("/sentiment_data.json")
@@ -145,12 +167,42 @@ def load_csv():
         neg_json_object["data"] = neg_nums
         datasets.append(neg_json_object)
 
-    json_test = {
+    sentiment_json = {
         "labels": dates,
         "datasets": datasets
     }
 
-    return jsonify(json_test)
+    return jsonify(sentiment_json)
+
+
+################################################################################
+
+
+@app.route("/donut_chart_clinton.json")
+def load_clinton_donut():
+    """Create donut chart representing total neg/pos of tweets about Clinton"""
+
+
+    pos_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
+    print pos_clinton_tweets
+    neg_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
+
+    total_clinton = [len(pos_clinton_tweets), len(neg_clinton_tweets)]
+    print total_clinton
+
+    clinton_json = {
+        "labels": ["Positive", "Negative"],
+        "datasets": {
+            "data": total_clinton,
+            "backgroundColor": ["rgba(143, 211, 228,1)", "rgba(55,7,247,1)"]
+        }
+    }
+
+    return jsonify(clinton_json)
+
+
+################################################################################
+
 
 
 @app.route("/google.json")
@@ -165,7 +217,6 @@ def load_maps_data():
     json_list = []
 
     for location in location_data:
-        print location[0]
         location_specs = {"coordinates": location[0],
                         "num_tweets": float(location[1]), 
                         "color": sentiment_color[location[2]]}
@@ -176,6 +227,9 @@ def load_maps_data():
 
 
     return jsonify(test_json)
+
+
+################################################################################
 
 
 

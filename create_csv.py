@@ -17,17 +17,15 @@ def sort_by_datetime():
     """
 
     date_sorted = {}
-    options = {"Clinton" : { "neg" : 0, "pos" : 0}, 
-            "Trump" : {"neg" : 0, "pos" : 0},
-            "Both" : {"neg" : 0, "pos" : 0}}
 
     tweets = Tweet.query.all()
 
     for tweet in tweets:
         date_string = tweet.timestamp.strftime('%Y/%m/%d')
-        date_sorted[date_string] = date_sorted.get(date_string, options)
-        print tweet.candidates[0].name
-        print date_sorted[date_string][tweet.candidates[0].name]
+        date_sorted[date_string] = date_sorted.setdefault(date_string, {"Clinton" : { "neg" : 0, "pos" : 0}, 
+                                                                        "Trump" : {"neg" : 0, "pos" : 0},
+                                                                        "Both" : {"neg" : 0, "pos" : 0}})
+
         date_sorted[date_string][tweet.candidates[0].name][tweet.naive_bayes] += 1
 
     return date_sorted
@@ -45,24 +43,20 @@ def sort_location():
     """
 
     location_sorted = {}
-    options = {"Clinton" : { "neg" : 0, "pos" : 0}, 
-            "Trump" : {"neg" : 0, "pos" : 0},
-            "Both" : {"neg" : 0, "pos" : 0}}
 
     location_tweets = Tweet.query.filter(Tweet.profile_location != None).all()
 
-    for tweet in enumerate(location_tweets):
-        location = str(tweet.profile_location)
-        print "Start of loop: {}".format(location_sorted.keys())
-        location_sorted[location] = location_sorted.get(location, options)
-        print "After get method: {}".format(location_sorted.keys())
-        print "After get method full dict: {}".format(location_sorted)
+    for tweet in location_tweets:
+        location = tweet.profile_location
+        location_sorted[location] = location_sorted.setdefault(location, {"Clinton" : { "neg" : 0, "pos" : 0}, 
+                                                                "Trump" : {"neg" : 0, "pos" : 0},
+                                                                "Both" : {"neg" : 0, "pos" : 0}})
+
         location_sorted[location][tweet.candidates[0].name][tweet.naive_bayes] += 1
-        print "Full dict after adding + 1: {}".format(location_sorted)
 
 
 
-    # print location_sorted
+    print location_sorted
     return location_sorted
 
 
@@ -107,5 +101,5 @@ def write_csv():
 if __name__ == '__main__':
 
     connect_to_db(app)
-    # write_csv()
-    sort_location()
+    write_csv()
+    # sort_location()
