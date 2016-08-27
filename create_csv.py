@@ -1,6 +1,6 @@
 import sqlalchemy
 import csv
-from model import Tweet
+from model import Tweet, Candidate
 from model import connect_to_db, db
 from server import app
 import sys
@@ -76,6 +76,7 @@ def write_csv():
 
 
     for date, counts in all_dates.iteritems():
+        # for candidate in candidates:
         clinton_neg = counts["Clinton"]["pos"]
         clinton_pos = counts["Clinton"]["neg"]
         clinton_data = "|".join([date, str(clinton_neg), str(clinton_pos)])
@@ -98,8 +99,49 @@ def write_csv():
     print "File complete"
 
 
+def location_csv():
+    """Export location sorted dictionary to csv format"""
+
+    all_locations = sort_location()
+
+    candidates = db.session.query(Candidate.name).all()
+
+    location_file = open("location_data.txt", "w")
+
+    locations = []
+    sentiment_dicts = []
+
+    for location, sentiments in all_locations.iteritems():
+        location = geocoder.google(str(location))
+        coordinates = location.latlng
+
+        for candidate in candidates:
+            neg = sentiments[candidate[0]]["neg"]
+            pos = sentiments[candidate[0]]["pos"]
+
+
+            if neg > 0:
+                print neg
+                neg_data = "|".join([str(coordinates[0]), str(coordinates[1]), str(neg), candidate[0], "neg"])
+                location_file.write("{}\n".format(neg_data))
+            if pos > 0: 
+                pos_data = "|".join([str(coordinates[0]), str(coordinates[1]), str(pos), candidate[0], "pos"])
+                location_file.write("{}\n".format(pos_data))
+
+    location_file.close()
+        
+
+
+
+
+        # print location.latlng
+        # for count in counts:
+        #     each_subdict = "|".join([location, str(counts)])
+
+
 if __name__ == '__main__':
 
     connect_to_db(app)
-    write_csv()
+    # write_csv()
     # sort_location()
+    location_csv()

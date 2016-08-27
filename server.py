@@ -41,8 +41,8 @@ def load_location_data(filename):
 
     for row in open(filename):
         row = row.rstrip()
-        lat, lng, tweets, sentiment = row.split("|")
-        location_data.append(({"lat" : float(lat), "lng" : float(lng)}, float(tweets), sentiment))
+        lat, lng, tweets, candidate, sentiment = row.split("|")
+        location_data.append(({"lat" : float(lat), "lng" : float(lng)}, float(tweets), candidate, sentiment))
 
     return location_data
 
@@ -182,26 +182,65 @@ def load_csv():
 def load_clinton_donut():
     """Create donut chart representing total neg/pos of tweets about Clinton"""
 
-
+    ##currently querying all tweets, not just Clinton - come back to this
     pos_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
-    print pos_clinton_tweets
     neg_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
 
     total_clinton = [len(pos_clinton_tweets), len(neg_clinton_tweets)]
+
     print total_clinton
 
-    clinton_json = {
-        "labels": ["Positive", "Negative"],
-        "datasets": {
-            "data": total_clinton,
-            "backgroundColor": ["rgba(143, 211, 228,1)", "rgba(55,7,247,1)"]
-        }
-    }
+    # clinton_json = {
+    #       "labels": ["Positive", "Negative"],
+    #       "datasets": [
+    #                 {"data": total_clinton,
+    #                 "backgroundColor": ["rgba(143, 211, 228,1)","rgba(55,7,247,1)"]
+    #                 }]
+    #     }
+
+    clinton_json = {"labels": ["Red", "Green"],
+                    "datasets": [
+                        {"data": 300,
+                        "backgroundColor": "#FF6384"},
+                        {"data": 50,
+                        "backgroundColor": "rgba(143, 211, 288, 1)"}
+                        ]
+                    }
+
+    print clinton_json
 
     return jsonify(clinton_json)
 
 
 ################################################################################
+
+@app.route("/donut_chart_trump.json")
+def load_trump_donut():
+    """Create donut chart representing total neg/pos of tweets about Clinton"""
+
+
+    pos_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
+    neg_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
+
+    total_trump = [len(pos_clinton_tweets), len(neg_clinton_tweets)]
+
+    print total_trump
+
+    trump_json = {
+          "labels": ["Positive", "Negative"],
+          "datasets": [
+                    {"data": total_clinton,
+                    "backgroundColor": ["rgba(143, 211, 228,1)","rgba(55,7,247,1)"]
+                    }]
+        }
+
+    print trump_json
+
+    return jsonify(trump_json)
+
+
+################################################################################
+
 
 
 
@@ -209,17 +248,18 @@ def load_clinton_donut():
 def load_maps_data():
     """Create json object for google maps API"""
 
-    location_data = load_location_data("seed_data/location_sums.txt")
+    location_data = load_location_data("location_data.txt")
 
-    sentiment_color = {"Trump_neg" : "rgba(253,0,0,1)", "Trump_pos" : "rgba(255,199,199,1)",
-                        "Clinton_neg" : "rgba(55,7,247,1)", "Clinton_pos" : "rgba(143, 211, 228,1)"}
+    sentiment_color = {"Trump" : {"neg" : "rgba(253,0,0,1)", "pos" : "rgba(255,199,199,1)"},
+                        "Clinton" : {"neg" : "rgba(55,7,247,1)", "pos" : "rgba(143, 211, 228,1)"},
+                        "Both" : {"neg" : "rgba(20, 163, 27, 1)", "pos" : "rgba(128, 239, 133, 1)"}}
 
     json_list = []
 
     for location in location_data:
         location_specs = {"coordinates": location[0],
                         "num_tweets": float(location[1]), 
-                        "color": sentiment_color[location[2]]}
+                        "color": sentiment_color[location[2]][location[3]]}
 
         json_list.append(location_specs)
 

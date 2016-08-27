@@ -14,18 +14,32 @@
       height:700px;
       padding: 20px;
   }
+
+  #clintonDonut {
+    height: 50px;
+  }
 </style>
 
-<div class="line-chart">
-    <h1> Sentiment Comparison </h1>
-    <canvas id="sentiment_comparison" width="500" height="300"></canvas>
-    <br>
-    <canvas id="clintonDonut" width="50" height="50"></canvas>
-    <br>
+  <div class="jumbotron">
+    <div class="container">
+      <h1>We the People</h1>
+      <p>Sentiment Analysis on Political Tweets in the 2016 Election</p>
+    </div>
+  </div>
+  <div class="container">
+  <h1> Sentiment Comparison </h1>
+  <canvas id="sentiment_comparison" width="500" height="300"></canvas>
+  </div>
+  <br>
+  <div class="container">
+  <canvas id="clintonDonut" width="50" height="50"></canvas>
+  </div>
+  <br>
+  <div class="container">
     <h1>Locations</h1>
     <div id="map" width="500" height="1000"></div>
+  </div>
 
-</div>
 
     <script>
       $(document).ready(function () {
@@ -52,20 +66,19 @@
 
 
         var clintonDonutDiv = $("#clintonDonut").get(0).getContext("2d");
+        
 
         $.get("/donut_chart_clinton.json", function (data) {
+          console.log(data)
           var clintonDonut = new Chart(clintonDonutDiv, {
-            type: 'doughnut',
+            type: "doughtnut",
             data: data,
-            options: {
-              animateScale: true,
-            }
           });
         });
 
 
           //initialize map
-          var map = new google.maps.Map(document.getElementById('map'), {
+          var map = new google.maps.Map(document.getElementById("map"), {
             zoom: 12,
             scrollwheel: false,
             streetViewControl: false,
@@ -270,7 +283,7 @@
               path: google.maps.SymbolPath.CIRCLE,
               fillColor: color,
               fillOpacity: .2,
-              scale: tweets / 2,
+              scale: tweets*5,
               strokeColor: 'white',
               strokeWeight: .5
             };
