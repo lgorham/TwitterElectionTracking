@@ -18,6 +18,10 @@
   #clintonDonut {
     height: 50px;
   }
+
+  #trumpDonut {
+    height: 50px;
+  }
 </style>
 
   <div class="jumbotron">
@@ -31,9 +35,11 @@
   <canvas id="sentiment_comparison" width="500" height="300"></canvas>
   </div>
   <br>
+
   <div class="container">
-  <canvas id="clintonDonut" width="50" height="50"></canvas>
+  <canvas id="clintonDonut" width="600"></canvas><canvas id="trumpDonut" width="600"></canvas>
   </div>
+
   <br>
   <div class="container">
     <h1>Locations</h1>
@@ -47,6 +53,7 @@
         var line_chart = $("#sentiment_comparison").get(0).getContext("2d");
 
         $.get("/sentiment_data.json", function (data) {
+          console.log(data)
           var myLineChart = new Chart(line_chart, {
                                         type: "line",
                                         data: data,
@@ -65,16 +72,35 @@
                                         });
 
 
-        var clintonDonutDiv = $("#clintonDonut").get(0).getContext("2d");
-        
+        var clinton_donut_chart = $("#clintonDonut").get(0).getContext("2d");
 
         $.get("/donut_chart_clinton.json", function (data) {
-          console.log(data)
-          var clintonDonut = new Chart(clintonDonutDiv, {
-            type: "doughtnut",
-            data: data,
-          });
-        });
+          var myLineChart = new Chart(clinton_donut_chart, {
+                                        type: "doughnut",
+                                        data: data
+                                          });
+                                        });
+
+        var trump_donut_chart = $("#trumpDonut").get(0).getContext("2d");
+
+        $.get("/donut_chart_trump.json", function (data) {
+          var myLineChart = new Chart(trump_donut_chart, {
+                                        type: "doughnut",
+                                        data: data
+                                          });
+                                        });
+
+
+        // var clintonDonutDiv = $("#clintonDonut").get(0).getContext("2d");
+        
+
+        // $.get("/donut_chart_clinton.json", function (data) {
+        //   console.log(data)
+        //   var clintonDonut = new Chart(clintonDonutDiv, {
+        //     type: "doughtnut",
+        //     data: data,
+        //   });
+        // });
 
 
           //initialize map

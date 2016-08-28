@@ -81,14 +81,16 @@ def load_page_and_parse():
     driver = webdriver.Firefox()
 
     # stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    stop_date = datetime.datetime.strptime("2016-03-21", "%Y-%m-%d") 
-    tweets_until = "2016-03-21"
+    stop_date = datetime.datetime.strptime("2016-01-04", "%Y-%m-%d") 
+    tweets_until = "2016-01-04"
     # tweets_until = stop_date.date()
 
     date_errors = open("date_errors.txt", "a")
+
+    count_down = 3
     
     #just an infinite loop
-    while True:
+    while count_down:
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
         scroll_until = 400
@@ -115,6 +117,7 @@ def load_page_and_parse():
             tweets_until = stop_date.date()
 
         print "tweets until: {}".format(tweets_until)
+        count_down -= 1
         
     driver.quit()
 

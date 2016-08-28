@@ -3,7 +3,7 @@
 from flask import Flask, render_template, session, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 import jinja2
-from model import Tweet, connect_to_db, db
+from model import Tweet, Candidate, connect_to_db, db
 from datetime import datetime
 import sqlalchemy
 
@@ -152,6 +152,8 @@ def load_csv():
     options = {"seed_data/clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
             "seed_data/trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"}}
 
+             # "seed_data/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "pos_label": "Both Referenced - Negative", "candidate" : "Both"}
+
     datasets = []
 
     for option in options.keys():
@@ -182,34 +184,25 @@ def load_csv():
 def load_clinton_donut():
     """Create donut chart representing total neg/pos of tweets about Clinton"""
 
-    ##currently querying all tweets, not just Clinton - come back to this
+
+    #currently only queries on pos/neg not on associated candidate
     pos_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
     neg_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
 
-    total_clinton = [len(pos_clinton_tweets), len(neg_clinton_tweets)]
+    # test_clinton_pos = db.session.query(Tweet).filter((Tweet.name == "Clinton")).all()
+    # print test_clinton_pos
 
-    print total_clinton
+    datasets = []
+    datasets.append({"data" : [len(pos_clinton_tweets), len(neg_clinton_tweets)], "backgroundColor" : ["rgba(143, 211, 228,1)", "rgba(55,7,247,1)"]})
+   
 
-    # clinton_json = {
-    #       "labels": ["Positive", "Negative"],
-    #       "datasets": [
-    #                 {"data": total_clinton,
-    #                 "backgroundColor": ["rgba(143, 211, 228,1)","rgba(55,7,247,1)"]
-    #                 }]
-    #     }
-
-    clinton_json = {"labels": ["Red", "Green"],
-                    "datasets": [
-                        {"data": 300,
-                        "backgroundColor": "#FF6384"},
-                        {"data": 50,
-                        "backgroundColor": "rgba(143, 211, 288, 1)"}
-                        ]
-                    }
-
-    print clinton_json
+    clinton_json = {
+        "labels": ["Positive", "Negative"],
+        "datasets": datasets
+    }
 
     return jsonify(clinton_json)
+
 
 
 ################################################################################
@@ -219,22 +212,18 @@ def load_trump_donut():
     """Create donut chart representing total neg/pos of tweets about Clinton"""
 
 
+    #currently only queries on pos/neg not on associated candidate
     pos_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
     neg_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
 
-    total_trump = [len(pos_clinton_tweets), len(neg_clinton_tweets)]
-
-    print total_trump
+    datasets = []
+    datasets.append({"data" : [len(pos_trump_tweets), len(neg_trump_tweets)], "backgroundColor" : ["rgba(253, 175, 175,1)", "rgba(182,6,6,1)"]})
+   
 
     trump_json = {
-          "labels": ["Positive", "Negative"],
-          "datasets": [
-                    {"data": total_clinton,
-                    "backgroundColor": ["rgba(143, 211, 228,1)","rgba(55,7,247,1)"]
-                    }]
-        }
-
-    print trump_json
+        "labels": ["Positive", "Negative"],
+        "datasets": datasets
+    }
 
     return jsonify(trump_json)
 
