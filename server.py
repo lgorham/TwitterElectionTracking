@@ -197,7 +197,7 @@ def load_clinton_donut():
    
 
     clinton_json = {
-        "labels": ["Positive", "Negative"],
+        "labels": ["Clinton - Positive", "Clinton - Negative"],
         "datasets": datasets
     }
 
@@ -209,7 +209,7 @@ def load_clinton_donut():
 
 @app.route("/donut_chart_trump.json")
 def load_trump_donut():
-    """Create donut chart representing total neg/pos of tweets about Clinton"""
+    """Create donut chart representing total neg/pos of tweets about Trump"""
 
 
     #currently only queries on pos/neg not on associated candidate
@@ -221,7 +221,7 @@ def load_trump_donut():
    
 
     trump_json = {
-        "labels": ["Positive", "Negative"],
+        "labels": ["Trump - Positive", "Trump - Negative"],
         "datasets": datasets
     }
 
@@ -229,6 +229,61 @@ def load_trump_donut():
 
 
 ################################################################################
+
+
+
+@app.route("/donut_chart_both.json")
+def load_both_donut():
+    """Create donut chart representing total neg/pos of tweets referencing both candidates"""
+
+
+     #currently only queries on pos/neg not on associated candidate
+    pos_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
+    neg_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
+    datasets = []
+    datasets.append({"data" : [len(pos_both_tweets), len(neg_both_tweets)], "backgroundColor" : ["rgba(199, 244, 213, 1)", "rgba(17, 130, 53, 1)"]})
+   
+
+    both_json = {
+        "labels": ["Positive", "Negative"],
+        "datasets": datasets
+    }
+
+    return jsonify(both_json)
+
+
+################################################################################
+
+
+
+
+
+@app.route("/sum_comparison.json")
+def sum_comparison():
+    """Create horizontal chart representing total neg/pos of tweets about Clinton"""
+
+    clinton_tweets = db.session.query(Candidate).filter((Candidate.name == "Clinton")).one()
+    trump_tweets = db.session.query(Candidate).filter((Candidate.name == "Trump")).one()
+    both_tweets = db.session.query(Candidate).filter((Candidate.name == "Both")).one()
+
+
+    datasets = []
+    datasets.append({"data" : [len(clinton_tweets.tweets), len(trump_tweets.tweets), len(both_tweets.tweets)], "backgroundColor" : ["rgba(55,7,247,1)", "rgba(182,6,6,1)", "rgba(17, 130, 53, 1)"], "label": "All Tweets"})
+    # datasets.append({"data" : [len(clinton_tweets.tweets)], "backgroundColor": ["rgba(55,7,247,1)"], "label" : "Clinton"})
+    # datasets.append({"data" : [len(trump_tweets.tweets)], "backgroundColor": ["rgba(182,6,6,1)"], "label" : "Trump"}) 
+    # datasets.append({"data" : [len(both_tweets.tweets)], "backgroundColor": ["rgba(17, 130, 53, 1)"], "label" : "Both"})
+                    
+
+    sum_comparison_json = {
+        "labels": ["Clinton", "Trump", "Both"],
+        "datasets": datasets
+    }
+
+    return jsonify(sum_comparison_json)
+
+
+################################################################################
+
 
 
 

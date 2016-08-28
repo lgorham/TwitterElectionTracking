@@ -22,6 +22,11 @@
   #trumpDonut {
     height: 50px;
   }
+
+  #bothDonut {
+    height: 50px;
+  }
+
 </style>
 
   <div class="jumbotron">
@@ -37,7 +42,13 @@
   <br>
 
   <div class="container">
-  <canvas id="clintonDonut" width="600"></canvas><canvas id="trumpDonut" width="600"></canvas>
+  <canvas id="clintonDonut" width="600"></canvas>
+  <canvas id="trumpDonut" width="600"></canvas>
+  <canvas id="bothDonut" width="600"></canvas>
+  </div>
+
+  <div class="container">
+    <canvas id="totalComparison" width="500"></canvas>
   </div>
 
   <br>
@@ -75,32 +86,41 @@
         var clinton_donut_chart = $("#clintonDonut").get(0).getContext("2d");
 
         $.get("/donut_chart_clinton.json", function (data) {
-          var myLineChart = new Chart(clinton_donut_chart, {
+          var myDonutChart = new Chart(clinton_donut_chart, {
                                         type: "doughnut",
                                         data: data
                                           });
                                         });
+
 
         var trump_donut_chart = $("#trumpDonut").get(0).getContext("2d");
 
         $.get("/donut_chart_trump.json", function (data) {
-          var myLineChart = new Chart(trump_donut_chart, {
+          var myDonutChart = new Chart(trump_donut_chart, {
                                         type: "doughnut",
                                         data: data
                                           });
                                         });
 
 
-        // var clintonDonutDiv = $("#clintonDonut").get(0).getContext("2d");
-        
+        var both_donut_chart = $("#bothDonut").get(0).getContext("2d");
 
-        // $.get("/donut_chart_clinton.json", function (data) {
-        //   console.log(data)
-        //   var clintonDonut = new Chart(clintonDonutDiv, {
-        //     type: "doughtnut",
-        //     data: data,
-        //   });
-        // });
+        $.get("/donut_chart_both.json", function (data) {
+          var myDonutChart = new Chart(both_donut_chart, {
+                                        type: "doughnut",
+                                        data: data
+                                          });
+                                        });
+
+
+        var total_comparison_chart = $("#totalComparison").get(0).getContext("2d");
+
+        $.get("/sum_comparison.json", function (data) {
+          var horizontalBar = new Chart(total_comparison_chart, {
+                                        type: "horizontalBar",
+                                        data: data
+                                          });
+                                        });
 
 
           //initialize map
