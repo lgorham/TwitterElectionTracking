@@ -160,7 +160,7 @@ def load_csv():
 
     options = {"seed_data/clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
             "seed_data/trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"},
-            "seed_data/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "pos_label": "Both Referenced - Negative", "candidate" : "Both"}}
+            "seed_data/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "neg_label": "Both Referenced - Negative", "candidate" : "Both"}}
 
              
 
@@ -299,7 +299,7 @@ def sum_comparison():
 def load_maps_data():
     """Create json object for google maps API"""
 
-    location_data = load_location_data("location_data.txt")
+    location_data = load_location_data("seed_data/location_data.txt")
 
     sentiment_color = {"Trump" : {"neg" : "rgba(253,0,0,1)", "pos" : "rgba(255,199,199,1)"},
                         "Clinton" : {"neg" : "rgba(55,7,247,1)", "pos" : "rgba(143, 211, 228,1)"},
