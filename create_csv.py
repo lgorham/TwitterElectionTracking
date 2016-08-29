@@ -26,7 +26,7 @@ def sort_by_datetime():
                                                                         "Trump" : {"neg" : 0, "pos" : 0},
                                                                         "Both" : {"neg" : 0, "pos" : 0}})
 
-        date_sorted[date_string][tweet.candidates[0].name][tweet.naive_bayes] += 1
+        date_sorted[date_string][tweet.referenced_candidate][tweet.naive_bayes] += 1
 
     return date_sorted
 
@@ -52,7 +52,7 @@ def sort_location():
                                                                 "Trump" : {"neg" : 0, "pos" : 0},
                                                                 "Both" : {"neg" : 0, "pos" : 0}})
 
-        location_sorted[location][tweet.candidates[0].name][tweet.naive_bayes] += 1
+        location_sorted[location][tweet.referenced_candidate][tweet.naive_bayes] += 1
 
 
 
@@ -65,7 +65,7 @@ def sort_location():
 
 
 
-def write_csv():
+def sentiment_csv():
     """Export datetime sorted dictionary to csv format"""
 
     all_dates = sort_by_datetime()
@@ -131,17 +131,9 @@ def location_csv():
     location_file.close()
         
 
-
-
-
-        # print location.latlng
-        # for count in counts:
-        #     each_subdict = "|".join([location, str(counts)])
-
-
 if __name__ == '__main__':
 
     connect_to_db(app)
-    # write_csv()
+    sentiment_csv()
     # sort_location()
     location_csv()

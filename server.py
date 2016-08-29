@@ -23,8 +23,9 @@ def load_sentiment_data(filename):
         row = row.rstrip()
         items = row.split("|")
         dates.append(items[0])
-        pos_scores.append(items[1])
-        neg_scores.append(items[2])
+        neg_scores.append(items[1])
+        pos_scores.append(items[2])
+
 
     return [dates, pos_scores, neg_scores]
 
@@ -60,7 +61,11 @@ def pos_line_chart(candidate):
             "Clinton" : {"backgroundColor" : "rgba(143, 211, 228, 0.2)",
                         "borderColor" : "rgba(143, 211, 228,1)",
                         "pointBorderColor" : "rgba(143, 211, 228,1)",
-                        "pointHoverBorderColor" : "rgba(143, 211, 228,1)"}}
+                        "pointHoverBorderColor" : "rgba(143, 211, 228,1)"},
+            "Both" : {"backgroundColor" : "rgba(128, 239, 133, 0.2)",
+                        "borderColor" : "rgba(128, 239, 133, 1)",
+                        "pointBorderColor" : "rgba(128, 239, 133, 1)",
+                        "pointHoverBorderColor" : "rgba(128, 239, 133, 1)"}}
 
     chart_specs = {
                 "label": "",
@@ -104,7 +109,11 @@ def neg_line_chart(candidate):
             "Clinton" : {"backgroundColor" : "rgba(55,7,247,0.2)",
                         "borderColor" : "rgba(55,7,247,1)",
                         "pointBorderColor" : "rgba(55,7,247,1)",
-                        "pointHoverBorderColor" : "rgba(55,7,247,1)"}}
+                        "pointHoverBorderColor" : "rgba(55,7,247,1)"},
+            "Both" : {"backgroundColor" : "rgba(20, 163, 27, 0.2)",
+                        "borderColor" : "rgba(20, 163, 27, 1)",
+                        "pointBorderColor" : "rgba(20, 163, 27, 1)",
+                        "pointHoverBorderColor" : "rgba(20, 163, 27, 1)"}}
 
     chart_specs = {
                 "label": "",
@@ -150,9 +159,10 @@ def load_csv():
 
 
     options = {"seed_data/clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
-            "seed_data/trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"}}
+            "seed_data/trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"},
+            "seed_data/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "pos_label": "Both Referenced - Negative", "candidate" : "Both"}}
 
-             # "seed_data/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "pos_label": "Both Referenced - Negative", "candidate" : "Both"}
+             
 
     datasets = []
 
@@ -185,12 +195,10 @@ def load_clinton_donut():
     """Create donut chart representing total neg/pos of tweets about Clinton"""
 
 
-    #currently only queries on pos/neg not on associated candidate
-    pos_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
-    neg_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
+    pos_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Clinton")).all()
+    
+    neg_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Clinton")).all()
 
-    # test_clinton_pos = db.session.query(Tweet).filter((Tweet.name == "Clinton")).all()
-    # print test_clinton_pos
 
     datasets = []
     datasets.append({"data" : [len(pos_clinton_tweets), len(neg_clinton_tweets)], "backgroundColor" : ["rgba(143, 211, 228,1)", "rgba(55,7,247,1)"]})
@@ -212,9 +220,9 @@ def load_trump_donut():
     """Create donut chart representing total neg/pos of tweets about Trump"""
 
 
-    #currently only queries on pos/neg not on associated candidate
-    pos_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
-    neg_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
+    # Currently only queries on pos/neg not on associated candidate
+    pos_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Trump")).all()
+    neg_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Trump")).all()
 
     datasets = []
     datasets.append({"data" : [len(pos_trump_tweets), len(neg_trump_tweets)], "backgroundColor" : ["rgba(253, 175, 175,1)", "rgba(182,6,6,1)"]})
@@ -237,9 +245,9 @@ def load_both_donut():
     """Create donut chart representing total neg/pos of tweets referencing both candidates"""
 
 
-     #currently only queries on pos/neg not on associated candidate
-    pos_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos")).all()
-    neg_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg")).all()
+     # Currently only queries on pos/neg not on associated candidate
+    pos_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Both")).all()
+    neg_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Both")).all()
     datasets = []
     datasets.append({"data" : [len(pos_both_tweets), len(neg_both_tweets)], "backgroundColor" : ["rgba(199, 244, 213, 1)", "rgba(17, 130, 53, 1)"]})
    
@@ -262,16 +270,15 @@ def load_both_donut():
 def sum_comparison():
     """Create horizontal chart representing total neg/pos of tweets about Clinton"""
 
-    clinton_tweets = db.session.query(Candidate).filter((Candidate.name == "Clinton")).one()
-    trump_tweets = db.session.query(Candidate).filter((Candidate.name == "Trump")).one()
-    both_tweets = db.session.query(Candidate).filter((Candidate.name == "Both")).one()
+    clinton_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Clinton").all()
+    trump_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Trump").all()
+    both_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Both").all()
 
 
     datasets = []
-    datasets.append({"data" : [len(clinton_tweets.tweets), len(trump_tweets.tweets), len(both_tweets.tweets)], "backgroundColor" : ["rgba(55,7,247,1)", "rgba(182,6,6,1)", "rgba(17, 130, 53, 1)"], "label": "All Tweets"})
-    # datasets.append({"data" : [len(clinton_tweets.tweets)], "backgroundColor": ["rgba(55,7,247,1)"], "label" : "Clinton"})
-    # datasets.append({"data" : [len(trump_tweets.tweets)], "backgroundColor": ["rgba(182,6,6,1)"], "label" : "Trump"}) 
-    # datasets.append({"data" : [len(both_tweets.tweets)], "backgroundColor": ["rgba(17, 130, 53, 1)"], "label" : "Both"})
+    datasets.append({"data" : [len(clinton_tweets), len(trump_tweets), len(both_tweets)], 
+                    "backgroundColor" : ["rgba(55,7,247,1)", "rgba(182,6,6,1)", "rgba(17, 130, 53, 1)"], 
+                    "label": "All Tweets"})
                     
 
     sum_comparison_json = {

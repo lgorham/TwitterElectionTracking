@@ -21,9 +21,9 @@ def beatiful_soup_parse(html, last_tweet_date):
 
     parent_tweets = soup.findAll("div", {"class" : "tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet "})
 
-    #While it would be more concise to seed directly into my database in this step
-    #given the time constraints of the project, the cost of having to repeat the download/parse
-    #process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
+    # While it would be more concise to seed directly into my database in this step
+    # given the time constraints of the project, the cost of having to repeat the download/parse
+    # process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
 
     data_file = open("data_file.txt", "a")
 
@@ -42,7 +42,7 @@ def beatiful_soup_parse(html, last_tweet_date):
 
         timestamp = timestamps[0]['data-time']
 
-        #not all twitter users provide geotags or profile location information
+        # Not all twitter users provide geotags or profile location information.
         if profile_location:
             profile_location = profile_location[0]['title']
         else:
@@ -54,7 +54,7 @@ def beatiful_soup_parse(html, last_tweet_date):
 
         date_timestamp = datetime.datetime.fromtimestamp(float(timestamp))
 
-        #only write non-repeat tweets to file
+        # Checks to make sure that these are not duplicate tweets, and only writes new tweets to file.
         if date_timestamp < last_tweet_date:
             dataline = "|".join([handle, tweet_id, content, timestamp, profile_location, place_id])
             data_file.write("{}\n".format(dataline))
@@ -80,17 +80,15 @@ def load_page_and_parse():
 
     driver = webdriver.Firefox()
 
-    # stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    stop_date = datetime.datetime.strptime("2016-01-04", "%Y-%m-%d") 
-    tweets_until = "2016-01-04"
-    # tweets_until = stop_date.date()
+    stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
+    # stop_date = datetime.datetime.strptime("2016-01-02", "%Y-%m-%d") 
+    # tweets_until = "2016-01-02"
+    tweets_until = stop_date.date()
 
     date_errors = open("date_errors.txt", "a")
-
-    count_down = 3
     
-    #just an infinite loop
-    while count_down:
+    # An infinite loop - since Twitter's Advanced Search will continue to load past the "end date" you specify.
+    while True:
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
         scroll_until = 400
