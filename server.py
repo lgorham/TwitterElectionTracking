@@ -6,6 +6,7 @@ import jinja2
 from model import Tweet, Candidate, connect_to_db, db
 from datetime import datetime
 import sqlalchemy
+from server_colors import POSITIVE_COLORS, NEGATIVE_COLORS, GOOGLE_MAPS_COLORS
 
 
 app = Flask(__name__)
@@ -54,35 +55,22 @@ def load_location_data(filename):
 def pos_line_chart(candidate):
     """Generate a json object for sentiment line chart"""
 
-    colors = {"Trump" : {"backgroundColor" : "rgba(253, 175, 175, 0.2)",
-                        "borderColor" : "rgba(253, 175, 175,1)",
-                        "pointBorderColor" : "rgba(253, 175, 175,1)",
-                        "pointHoverBorderColor" : "rgba(253, 175, 175,1)"},
-            "Clinton" : {"backgroundColor" : "rgba(143, 211, 228, 0.2)",
-                        "borderColor" : "rgba(143, 211, 228,1)",
-                        "pointBorderColor" : "rgba(143, 211, 228,1)",
-                        "pointHoverBorderColor" : "rgba(143, 211, 228,1)"},
-            "Both" : {"backgroundColor" : "rgba(128, 239, 133, 0.2)",
-                        "borderColor" : "rgba(128, 239, 133, 1)",
-                        "pointBorderColor" : "rgba(128, 239, 133, 1)",
-                        "pointHoverBorderColor" : "rgba(128, 239, 133, 1)"}}
-
     chart_specs = {
                 "label": "",
                 "fill": False,
                 "lineTension": 0.5,
-                "backgroundColor": colors[candidate]["backgroundColor"],
-                "borderColor": colors[candidate]["borderColor"],
+                "backgroundColor": POSITIVE_COLORS[candidate]["backgroundColor"],
+                "borderColor": POSITIVE_COLORS[candidate]["borderColor"],
                 "borderCapStyle": 'butt',
                 "borderDash": [],
                 "borderDashOffset": 0.0,
                 "borderJoinStyle": 'miter',
-                "pointBorderColor": colors[candidate]["pointBorderColor"],
+                "pointBorderColor": POSITIVE_COLORS[candidate]["pointBorderColor"],
                 "pointBackgroundColor": "#fff",
                 "pointBorderWidth": 1,
                 "pointHoverRadius": 5,
                 "pointHoverBackgroundColor": "#fff",
-                "pointHoverBorderColor": colors[candidate]["pointHoverBorderColor"],
+                "pointHoverBorderColor": POSITIVE_COLORS[candidate]["pointHoverBorderColor"],
                 "pointHoverBorderWidth": 2,
                 "pointRadius": 3,
                 "pointHitRadius": 10,
@@ -102,35 +90,23 @@ def pos_line_chart(candidate):
 def neg_line_chart(candidate):
     """Generate a json object for sentiment line chart"""
 
-    colors = {"Trump" : {"backgroundColor" : "rgba(182,6,6,0.2)",
-                        "borderColor" : "rgba(182,6,6,1)",
-                        "pointBorderColor" : "rgba(182,6,6,1)",
-                        "pointHoverBorderColor" : "rgba(182,6,6,1)"},
-            "Clinton" : {"backgroundColor" : "rgba(55,7,247,0.2)",
-                        "borderColor" : "rgba(55,7,247,1)",
-                        "pointBorderColor" : "rgba(55,7,247,1)",
-                        "pointHoverBorderColor" : "rgba(55,7,247,1)"},
-            "Both" : {"backgroundColor" : "rgba(20, 163, 27, 0.2)",
-                        "borderColor" : "rgba(20, 163, 27, 1)",
-                        "pointBorderColor" : "rgba(20, 163, 27, 1)",
-                        "pointHoverBorderColor" : "rgba(20, 163, 27, 1)"}}
 
     chart_specs = {
                 "label": "",
                 "fill": False,
                 "lineTension": 0.5,
-                "backgroundColor": colors[candidate]["backgroundColor"],
-                "borderColor": colors[candidate]["borderColor"],
+                "backgroundColor": NEGATIVE_COLORS[candidate]["backgroundColor"],
+                "borderColor": NEGATIVE_COLORS[candidate]["borderColor"],
                 "borderCapStyle": 'butt',
                 "borderDash": [],
                 "borderDashOffset": 0.0,
                 "borderJoinStyle": 'miter',
-                "pointBorderColor": colors[candidate]["pointBorderColor"],
+                "pointBorderColor": NEGATIVE_COLORS[candidate]["pointBorderColor"],
                 "pointBackgroundColor": "#fff",
                 "pointBorderWidth": 1,
                 "pointHoverRadius": 5,
                 "pointHoverBackgroundColor": "#fff",
-                "pointHoverBorderColor": colors[candidate]["pointHoverBorderColor"],
+                "pointHoverBorderColor": NEGATIVE_COLORS[candidate]["pointHoverBorderColor"],
                 "pointHoverBorderWidth": 2,
                 "pointHitRadius": 10,
                 "data": [0], 
@@ -301,16 +277,12 @@ def load_maps_data():
 
     location_data = load_location_data("seed_data/location_data.txt")
 
-    sentiment_color = {"Trump" : {"neg" : "rgba(253,0,0,1)", "pos" : "rgba(255,199,199,1)"},
-                        "Clinton" : {"neg" : "rgba(55,7,247,1)", "pos" : "rgba(143, 211, 228,1)"},
-                        "Both" : {"neg" : "rgba(20, 163, 27, 1)", "pos" : "rgba(128, 239, 133, 1)"}}
-
     json_list = []
 
     for location in location_data:
         location_specs = {"coordinates": location[0],
                         "num_tweets": float(location[1]), 
-                        "color": sentiment_color[location[2]][location[3]]}
+                        "color": GOOGLE_MAPS_COLORS[location[2]][location[3]]}
 
         json_list.append(location_specs)
 
