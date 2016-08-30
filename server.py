@@ -158,9 +158,9 @@ def load_csv():
     """Load in data from csv format"""
 
 
-    options = {"seed_data/clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
-            "seed_data/trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"},
-            "seed_data/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "neg_label": "Both Referenced - Negative", "candidate" : "Both"}}
+    options = {"clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
+            "trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"},
+            "both_data.txt" : {"pos_label" : "Both Referenced - Positive", "neg_label": "Both Referenced - Negative", "candidate" : "Both"}}
 
              
 

@@ -95,36 +95,6 @@ def parsing_candidates(tweet):
     if trump_count > 0:
         return "Trump"
 
-    # if tweet.find("clinton"):
-    #     clinton_count += 1
-
-    # if tweet.find("trump")
-    #     trump_count += 1
-
-    # if trump_count > 1 and clinton_count > 1:
-    #     return "Both"
-
-    # if trump_count > 1:
-    #     return "Trump"
-
-    # if clinton_count > 1:
-    #     return "Clinton"
-
-    # for token in tokenized_tweet:
-    #     clinton_count = 0
-    #     trump_count = 0
-    #     if token in Clinton:
-    #             clinton_count += 1
-    #     elif token in Trump:
-    #         trump_count += 1
-
-    #     if trump_count > 0 and clinton_count > 0:
-    #         return "Both"
-        
-    #     if trump_count > 0:
-    #         return "Trump"
-    #     if clinton_count > 0:
-    #         return "Clinton"
 
 
 ################################################################################
@@ -134,9 +104,13 @@ def parsing_candidates(tweet):
 def load_tweets():
     """Load tweet data from scrapped twitter data file into database"""
 
+    starting_line = 0
+    count = 0
     Tweet.query.delete()
 
     for row in open("seed_data/data_file.txt"):
+        if line < starting_line:
+            continue
         row = row.rstrip()
         tweet_data = row.split("|")
         handle = tweet_data[0]
@@ -169,8 +143,10 @@ def load_tweets():
             print "Tweet added: {}".format(tweet.tweet_id)
             db.session.add(tweet)
             db.session.flush()
-
-    db.session.commit()
+    starting_line += 1
+    if count_line > 100:
+        db.session.commit()
+        count = 0
 
 
 ################################################################################
