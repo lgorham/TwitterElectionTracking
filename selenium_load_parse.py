@@ -10,6 +10,44 @@ import datetime
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
+def parse_tweet(tweet):
+    """
+    Called on individual tweets identified by BeautifulSoup - parses html
+    and returns list of relevant data
+    """
+
+    tweet_id = tweet['data-tweet-id']
+    handles = tweet.findAll("span", {"class" : "username"})
+    tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize"})
+    timestamps = tweet.findAll("span", {"class" : "_timestamp"})
+    profile_location = tweet.findAll("span", {"class" : "Tweet-geo"})
+    place_id = tweet.findAll("a", {"class": "ProfileTweet-actionButton"})
+
+    handle = handles[0].text
+    content = tweet_contents[0].text
+    content = content.replace('\n', ' ').replace('|', ' ')
+
+
+    timestamp = timestamps[0]['data-time']
+
+    if profile_location:
+        profile_location = profile_location[0]['title']
+    else:
+        profile_location = ""
+    if place_id:
+        place_id = place_id[0]['data-place-id']
+    else:
+        place_id = ""
+
+    date_timestamp = datetime.datetime.fromtimestamp(float(timestamp))
+
+    return [handle, tweet_id, content, timestamp, profile_location, place_id]
+
+
+
+################################################################################
+
+
 
 def beatiful_soup_parse(html, last_tweet_date):
     """
@@ -28,31 +66,7 @@ def beatiful_soup_parse(html, last_tweet_date):
     data_file = open("data_file.txt", "a")
 
     for tweet in parent_tweets:
-        tweet_id = tweet['data-tweet-id']
-        handles = tweet.findAll("span", {"class" : "username"})
-        tweet_contents = tweet.findAll("p", {"class" : "TweetTextSize"})
-        timestamps = tweet.findAll("span", {"class" : "_timestamp"})
-        profile_location = tweet.findAll("span", {"class" : "Tweet-geo"})
-        place_id = tweet.findAll("a", {"class": "ProfileTweet-actionButton"})
-
-        handle = handles[0].text
-        content = tweet_contents[0].text
-        content = content.replace('\n', ' ').replace('|', ' ')
-
-
-        timestamp = timestamps[0]['data-time']
-
-        # Not all twitter users provide geotags or profile location information.
-        if profile_location:
-            profile_location = profile_location[0]['title']
-        else:
-            profile_location = ""
-        if place_id:
-            place_id = place_id[0]['data-place-id']
-        else:
-            place_id = ""
-
-        date_timestamp = datetime.datetime.fromtimestamp(float(timestamp))
+        handle, tweet_id, content, timestamp, profile_location, place_id = parse_tweet(tweet)
 
         # Checks to make sure that these are not duplicate tweets, and only writes new tweets to file.
         if date_timestamp < last_tweet_date:
@@ -61,7 +75,9 @@ def beatiful_soup_parse(html, last_tweet_date):
 
 
     data_file.close()
+    
 
+    # Evaluating timestamp to ensure that the next Twitter search does not miss a day of tweets
     if date_timestamp.hour <= 17:
         until_date = date_timestamp + datetime.timedelta(days=1)
 
