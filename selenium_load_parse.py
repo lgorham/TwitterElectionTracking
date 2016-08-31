@@ -68,14 +68,14 @@ def beatiful_soup_parse(html, last_tweet_date):
     for tweet in parent_tweets:
         handle, tweet_id, content, timestamp, profile_location, place_id = parse_tweet(tweet)
 
-        # Checks to make sure that these are not duplicate tweets, and only writes new tweets to file.
+        # Checks to make sure that these are not tweets from the overlapping timeperiod, and only writes new tweets to file.
         if date_timestamp < last_tweet_date:
             dataline = "|".join([handle, tweet_id, content, timestamp, profile_location, place_id])
             data_file.write("{}\n".format(dataline))
 
 
     data_file.close()
-    
+
 
     # Evaluating timestamp to ensure that the next Twitter search does not miss a day of tweets
     if date_timestamp.hour <= 17:
@@ -85,6 +85,33 @@ def beatiful_soup_parse(html, last_tweet_date):
         until_date = date_timestamp + datetime.timedelta(days=2)
 
     return until_date
+
+
+
+################################################################################
+
+
+
+def stop_date_evaluation(stop_date, tweets_until):
+    """
+    Evaluates whether or not the date returned from parsing is a repeat of the last date,
+    and if so, subtracts another day in order to not repeat scraping
+    """
+
+    if stop_date.date() == tweets_until:
+            repeats = "|".join([str(stop_date.date())])
+            date_errors.write("{}\n".format(repeats))
+            tweets_until = stop_date - datetime.timedelta(days=1)
+            tweets_until = tweets_until.date()
+
+        else:
+            tweets_until = stop_date.date()
+
+    return tweets_until
+
+
+
+################################################################################
 
 
 
@@ -110,7 +137,6 @@ def load_page_and_parse():
         scroll_until = 400
 
         while scroll_until:
-            #infinite while loop for continuous scraping
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             scroll_until -= 1
@@ -121,14 +147,7 @@ def load_page_and_parse():
         html = driver.page_source
         stop_date = beatiful_soup_parse(html, stop_date)
 
-        if stop_date.date() == tweets_until:
-            repeats = "|".join([str(stop_date.date())])
-            date_errors.write("{}\n".format(repeats))
-            tweets_until = stop_date - datetime.timedelta(days=1)
-            tweets_until = tweets_until.date()
-
-        else:
-            tweets_until = stop_date.date()
+        tweets_until = stop_date_evaluation(stop_date, tweets_until)
 
         print "tweets until: {}".format(tweets_until)
         count_down -= 1
