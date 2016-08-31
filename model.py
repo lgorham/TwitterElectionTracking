@@ -54,8 +54,8 @@ class Tweet(db.Model):
     text = db.Column(db.String(400), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     naive_bayes = db.Column(db.String(5), nullable=True)
-    profile_location = db.Column(db.String(30), nullable=True)
-    place_id = db.Column(db.String(25), nullable=True)
+    profile_location = db.Column(db.String(100), nullable=True)
+    place_id = db.Column(db.String(30), nullable=True)
 
 
     # Defining relationship to user (one user to many tweets)
@@ -102,26 +102,14 @@ class TweetKeyword(db.Model):
     keyword_id = db.Column(db.Integer, db.ForeignKey(Keyword.keyword_id), nullable=False)
 
 
-
-# class TweetCandidate(db.Model):
-#     """Association table joining tweets and the candidates referenced in the tweet"""
-
-#     __tablename__ = "tweet_candidates"
-
-#     tweet_candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     tweet_id = db.Column(db.String(25), db.ForeignKey(Tweet.tweet_id), nullable=False)
-#     candidate_id = db.Column(db.Integer, db.ForeignKey(Candidate.candidate_id), nullable=False)
-
-
-
-##table that checks when the last time you collected data would be
-##if it has been long enough, starts collecting data
+# TO IMPLEMENT: Table that checks when the last time you collected data would be
+## if it has been long enough, starts collecting data
 
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    # Configure to use our PstgreSQL database
+    # Configure to use PostgreSQL database
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///sentiments'
     db.app = app
     db.init_app(app)

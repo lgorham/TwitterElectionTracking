@@ -166,18 +166,17 @@ def load_csv():
 ################################################################################
 
 
-@app.route("/donut_chart_clinton.json")
-def load_clinton_donut():
-    """Create donut chart representing total neg/pos of tweets about Clinton"""
+@app.route("/donut_chart.json/<candidate>")
+def load_clinton_donut(candidate):
+    """Create donut chart representing total neg/pos of tweets about the passed in candidate"""
 
 
-    pos_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Clinton")).all()
-    
-    neg_clinton_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Clinton")).all()
+    pos_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == candidate)).all()
+    neg_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == candidate)).all()
 
 
-    datasets = []
-    datasets.append({"data" : [len(pos_clinton_tweets), len(neg_clinton_tweets)], "backgroundColor" : ["rgba(143, 211, 228,1)", "rgba(55,7,247,1)"]})
+    datasets = [{"data" : [len(pos_tweets), len(neg_tweets)], 
+                "backgroundColor" : [POSITIVE_COLORS[candidate]["backgroundColor"], NEGATIVE_COLORS[candidate]["backgroundColor"]]}]
    
 
     clinton_json = {
@@ -191,49 +190,49 @@ def load_clinton_donut():
 
 ################################################################################
 
-@app.route("/donut_chart_trump.json")
-def load_trump_donut():
-    """Create donut chart representing total neg/pos of tweets about Trump"""
+# @app.route("/donut_chart_trump.json")
+# def load_trump_donut():
+#     """Create donut chart representing total neg/pos of tweets about Trump"""
 
 
-    # Currently only queries on pos/neg not on associated candidate
-    pos_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Trump")).all()
-    neg_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Trump")).all()
+#     # Currently only queries on pos/neg not on associated candidate
+#     pos_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Trump")).all()
+#     neg_trump_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Trump")).all()
 
-    datasets = []
-    datasets.append({"data" : [len(pos_trump_tweets), len(neg_trump_tweets)], "backgroundColor" : ["rgba(253, 175, 175,1)", "rgba(182,6,6,1)"]})
+#     datasets = []
+#     datasets.append({"data" : [len(pos_trump_tweets), len(neg_trump_tweets)], "backgroundColor" : ["rgba(253, 175, 175,1)", "rgba(182,6,6,1)"]})
    
 
-    trump_json = {
-        "labels": ["Trump - Positive", "Trump - Negative"],
-        "datasets": datasets
-    }
+#     trump_json = {
+#         "labels": ["Trump - Positive", "Trump - Negative"],
+#         "datasets": datasets
+#     }
 
-    return jsonify(trump_json)
-
-
-################################################################################
+#     return jsonify(trump_json)
 
 
-
-@app.route("/donut_chart_both.json")
-def load_both_donut():
-    """Create donut chart representing total neg/pos of tweets referencing both candidates"""
+# ################################################################################
 
 
-     # Currently only queries on pos/neg not on associated candidate
-    pos_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Both")).all()
-    neg_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Both")).all()
-    datasets = []
-    datasets.append({"data" : [len(pos_both_tweets), len(neg_both_tweets)], "backgroundColor" : ["rgba(199, 244, 213, 1)", "rgba(17, 130, 53, 1)"]})
+
+# @app.route("/donut_chart_both.json")
+# def load_both_donut():
+#     """Create donut chart representing total neg/pos of tweets referencing both candidates"""
+
+
+#     # Currently only queries on pos/neg not on associated candidate
+#     pos_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == "Both")).all()
+#     neg_both_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == "Both")).all()
+#     datasets = []
+#     datasets.append({"data" : [len(pos_both_tweets), len(neg_both_tweets)], "backgroundColor" : ["rgba(199, 244, 213, 1)", "rgba(17, 130, 53, 1)"]})
    
 
-    both_json = {
-        "labels": ["Positive", "Negative"],
-        "datasets": datasets
-    }
+#     both_json = {
+#         "labels": ["Positive", "Negative"],
+#         "datasets": datasets
+#     }
 
-    return jsonify(both_json)
+#     return jsonify(both_json)
 
 
 ################################################################################

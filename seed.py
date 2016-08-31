@@ -1,5 +1,6 @@
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import FlushError
 from model import User, Tweet, Keyword, TweetKeyword, Candidate
 from model import connect_to_db, db
 from naive_bayes import run_classifier
@@ -109,44 +110,57 @@ def load_tweets():
     Tweet.query.delete()
 
     for row in open("seed_data/data_file.txt"):
-        if line < starting_line:
+        if row < starting_line:
             continue
         row = row.rstrip()
         tweet_data = row.split("|")
         handle = tweet_data[0]
 
+        # Foreign key to users table
         user_id = User.query.filter(User.handle == handle).first()
 
+        # Converting UTC timestamp
         timestamp = datetime.datetime.fromtimestamp(float(tweet_data[3]))
+
+        # For tweets that don't have location data
         if tweet_data[4] == "":
             tweet_data[4] = None
         if tweet_data[5] == "":
             tweet_data[5] = None
 
+        # Removing URLs from the tweet
         clean_tweet = re.sub(r"http\S+", "", tweet_data[2])
-        print "Cleaned Tweet: {}".format(clean_tweet)
         nb_classification = run_classifier([clean_tweet])
 
+        # Returns Trump/Clinton/Both for sorting later
         candidate = parsing_candidates(clean_tweet)
 
-        print "Candidate: {}, Type: {}".format(candidate, type(candidate))
-
         if candidate:
-            tweet = Tweet(user_id=user_id.user_id,
-                            tweet_id=tweet_data[1], 
-                            text=clean_tweet, 
-                            timestamp=timestamp, 
-                            profile_location=tweet_data[4], 
-                            place_id=tweet_data[5],
-                            naive_bayes=nb_classification[0],
-                            referenced_candidate=candidate)
-            print "Tweet added: {}".format(tweet.tweet_id)
-            db.session.add(tweet)
-            db.session.flush()
+            try:
+                tweet = Tweet(user_id=user_id.user_id,
+                                tweet_id=tweet_data[1], 
+                                text=clean_tweet, 
+                                timestamp=timestamp, 
+                                profile_location=tweet_data[4], 
+                                place_id=tweet_data[5],
+                                naive_bayes=nb_classification[0],
+                                referenced_candidate=candidate)
+                print "Tweet added: {}".format(tweet.tweet_id)
+                db.session.add(tweet)
+                db.session.flush()
+            except FlushError:
+
+                # Preventing duplicate tweets from accidentally being added
+                db.session.rollback()
+                continue
+
+    db.session.commit()
+
+    count += 1
     starting_line += 1
-    if count_line > 100:
+    if count % 100 == 0:
         db.session.commit()
-        count = 0
+
 
 
 ################################################################################

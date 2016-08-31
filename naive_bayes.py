@@ -34,11 +34,12 @@ def load_training_data():
             t = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL', t)
 
             # Replacing candidate names so as not to have candidate names affect classifier
-
             t = t.replace('trump', 'CANDIDATE')
             t = t.replace('clinton', 'CANDIDATE')
             tweet_text.append(t)
 
+
+            # Sorting into pos/neg lists for training purposes
             if tweet == positive_tweets:
                 tweet_sentiment.append('pos')
             if tweet == negative_tweets:
@@ -92,8 +93,14 @@ def train_model(data, target):
                                                                                                 target,
                                                                                                 test_size=0.4)
 
+    
+    # Fitting the Naive Bayes classifier wtih the training tweets and corresponding sentiment
     classifier = BernoulliNB().fit(train_tweets, train_sentiment)
+
+
     predicted = classifier.predict(validation_tweets)
+
+    # Using the cross-validation split, evaluate the accuracy of the predicted tweets
     evaluate_model(validation_sentiment, predicted)
 
     # Pickling the classifier
@@ -114,11 +121,9 @@ def evaluate_model(true_sentiment, predicted_sentiment):
 
 
 def run_classifier(to_classify):
-    """for importing into seed file to classify full database"""
+    """For importing into seed file to classify full database"""
 
-    # Opening up the trained and pickled classifier and vectorizer, in order to avoid
-    # having to retrain the classifier every time
-
+    # Unpickling the vectorizor and classifier - to avoid having to retrain/vectorize each time
     pickle_file = open('nb_classifier.pickle', 'rb')
     classifier = pickle.load(pickle_file)
     pickle_file.close()

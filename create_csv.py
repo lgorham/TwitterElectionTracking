@@ -135,5 +135,4 @@ if __name__ == '__main__':
 
     connect_to_db(app)
     sentiment_csv()
-    # sort_location()
     location_csv()
