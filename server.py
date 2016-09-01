@@ -6,7 +6,7 @@ import jinja2
 from model import Tweet, Candidate, connect_to_db, db
 from datetime import datetime
 import sqlalchemy
-from server_colors import POSITIVE_COLORS, NEGATIVE_COLORS, GOOGLE_MAPS_COLORS
+from global_dicts import POSITIVE_COLORS, NEGATIVE_COLORS, GOOGLE_MAPS_COLORS
 
 
 app = Flask(__name__)
@@ -218,21 +218,21 @@ def sum_comparison():
 ################################################################################
 
 
-
-
-
-@app.route("/google.json")
+@app.route("/map.json")
 def load_maps_data():
     """Create json object for google maps API"""
 
     location_data = load_location_data("seed_data/location_data.txt")
+    print location_data
 
     json_list = []
+
 
     for location in location_data:
         location_specs = {"coordinates": location[0],
                         "num_tweets": float(location[1]), 
                         "color": GOOGLE_MAPS_COLORS[location[2]][location[3]]}
+        print location_specs
 
         json_list.append(location_specs)
 

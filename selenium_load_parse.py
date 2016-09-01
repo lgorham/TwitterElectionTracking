@@ -156,8 +156,20 @@ def load_page_and_parse():
 
     return stop_date
 
+################################################################################
 
 
+
+def update_database():
+    """
+    Check and see if time has based since database was last updated,
+    if a week has passed, restart the scraping process
+    """
+
+    
+
+
+################################################################################
 
 
 if __name__ == '__main__':

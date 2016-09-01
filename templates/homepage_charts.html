@@ -68,7 +68,6 @@
 
         //AJAX call to retrieve sentiment data by datetime - xAxis to use datetime from Moment.js
         $.get("/sentiment_data.json", function (data) {
-          console.log(data)
           var myLineChart = new Chart(line_chart, {
                                         type: "line",
                                         data: data,
@@ -94,28 +93,28 @@
           });
         }
 
-        $.get("/donut_chart.json/Trump", function (data) {
-            generate_donut(data, trump_donut_chart)
-        });
+        // $.get("/donut_chart.json/Trump", function (data) {
+        //     generate_donut(data, trump_donut_chart)
+        // });
 
-        $.get("/donut_chart.json/Clinton", function (data) {
-            generate_donut(data, clinton_donut_chart)
-        });
+        // $.get("/donut_chart.json/Clinton", function (data) {
+        //     generate_donut(data, clinton_donut_chart)
+        // });
 
-        $.get("/donut_chart.josn/Both", function (data) {
-            generate_donut(data, both_donut_chart)
-        })
+        // $.get("/donut_chart.josn/Both", function (data) {
+        //     generate_donut(data, both_donut_chart)
+        // })
 
 
         // Bar chart showing comparison between Trump, Clinton and Both
         var total_comparison_chart = $("#totalComparison").get(0).getContext("2d");
 
-        $.get("/sum_comparison.json", function (data) {
-          var horizontalBar = new Chart(total_comparison_chart, {
-                                        type: "horizontalBar",
-                                        data: data
-                                          });
-                                        });
+        // $.get("/sum_comparison.json", function (data) {
+        //   var horizontalBar = new Chart(total_comparison_chart, {
+        //                                 type: "horizontalBar",
+        //                                 data: data
+        //                                   });
+        //                                 });
 
 
           // Initialize Google Map - Grayscale for style
@@ -332,7 +331,7 @@
           }
 
         // AJAX call for JSON to display data on map
-        $.get('/google.json', function (data) {
+        $.get("/map.json", function (data) {
           var locations = data["location_data"];
 
           for (var i = 0; i < locations.length; i++) {

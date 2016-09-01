@@ -3,6 +3,8 @@ import csv
 from model import Tweet, Candidate
 from model import connect_to_db, db
 from server import app
+from global_dicts import CANDIDATE_COUNTS
+from copy import deepcopy
 import sys
 import geocoder
 
@@ -19,15 +21,15 @@ def sort_by_datetime():
     date_sorted = {}
 
     tweets = Tweet.query.all()
+    print len(tweets)
 
     for tweet in tweets:
         date_string = tweet.timestamp.strftime('%Y/%m/%d')
-        date_sorted[date_string] = date_sorted.setdefault(date_string, {"Clinton" : { "neg" : 0, "pos" : 0}, 
-                                                                        "Trump" : {"neg" : 0, "pos" : 0},
-                                                                        "Both" : {"neg" : 0, "pos" : 0}})
+        date_sorted[date_string] = date_sorted.setdefault(date_string, deepcopy(CANDIDATE_COUNTS))
 
         date_sorted[date_string][tweet.referenced_candidate][tweet.naive_bayes] += 1
 
+    print date_sorted
     return date_sorted
 
 
@@ -48,9 +50,7 @@ def sort_location():
 
     for tweet in location_tweets:
         location = tweet.profile_location
-        location_sorted[location] = location_sorted.setdefault(location, {"Clinton" : { "neg" : 0, "pos" : 0}, 
-                                                                "Trump" : {"neg" : 0, "pos" : 0},
-                                                                "Both" : {"neg" : 0, "pos" : 0}})
+        location_sorted[location] = location_sorted.setdefault(location, deepcopy(CANDIDATE_COUNTS))
 
         location_sorted[location][tweet.referenced_candidate][tweet.naive_bayes] += 1
 
@@ -70,33 +70,26 @@ def sentiment_csv():
 
     all_dates = sort_by_datetime()
 
-    clinton_file = open("clinton_data.txt", "w")
-    trump_file = open("trump_data.txt", "w")
-    both_file = open("both_data.txt", "w")
+
+    candidates = {"Clinton" : "seed_data/clinton_data.txt", 
+                "Trump" : "seed_data/trump_data.txt", 
+                "Both" : "seed_data/both_data.txt"}
 
 
     for date, counts in all_dates.iteritems():
-        # for candidate in candidates:
-        clinton_neg = counts["Clinton"]["pos"]
-        clinton_pos = counts["Clinton"]["neg"]
-        clinton_data = "|".join([date, str(clinton_neg), str(clinton_pos)])
-        clinton_file.write("{}\n".format(clinton_data))
-
-        trump_neg = counts["Trump"]["neg"]
-        trump_pos = counts["Trump"]["pos"]
-        trump_data = "|".join([date, str(trump_neg), str(trump_pos)])
-        trump_file.write("{}\n".format(trump_data))
-
-        both_neg = counts["Both"]["neg"]
-        both_pos = counts["Both"]["pos"]
-        both_data = "|".join([date, str(both_neg), str(both_pos)])
-        both_file.write("{}\n".format(both_data))
-
-    clinton_file.close()
-    trump_file.close()
-    both_file.close()
+        
+        for candidate in candidates.keys():
+            negative = counts[candidate]["neg"]
+            positive = counts[candidate]["pos"]
+            candidate_data = "|".join([date, str(negative), str(positive)])
+            candidate_file = open(candidates[candidate], "w")
+            candidate_file.write("{}\n".format(candidate_data))
+            candidate_file.close()
 
     print "File complete"
+
+
+################################################################################
 
 
 def location_csv():
@@ -106,7 +99,7 @@ def location_csv():
 
     candidates = db.session.query(Candidate.name).all()
 
-    location_file = open("location_data.txt", "w")
+    location_file = open("seed_data/location_data.txt", "w")
 
     locations = []
     sentiment_dicts = []
@@ -135,4 +128,4 @@ if __name__ == '__main__':
 
     connect_to_db(app)
     sentiment_csv()
-    location_csv()
+    # location_csv()

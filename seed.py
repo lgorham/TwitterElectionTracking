@@ -1,3 +1,4 @@
+import sqlalchemy
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import FlushError
@@ -105,13 +106,9 @@ def parsing_candidates(tweet):
 def load_tweets():
     """Load tweet data from scrapped twitter data file into database"""
 
-    starting_line = 0
-    count = 0
-    Tweet.query.delete()
+    # Tweet.query.delete()
 
     for row in open("seed_data/data_file.txt"):
-        if row < starting_line:
-            continue
         row = row.rstrip()
         tweet_data = row.split("|")
         handle = tweet_data[0]
@@ -123,10 +120,8 @@ def load_tweets():
         timestamp = datetime.datetime.fromtimestamp(float(tweet_data[3]))
 
         # For tweets that don't have location data
-        if tweet_data[4] == "":
-            tweet_data[4] = None
-        if tweet_data[5] == "":
-            tweet_data[5] = None
+        tweet_data[4] = tweet_data[4] or None
+        tweet_data[5] = tweet_data[5] or None
 
         # Removing URLs from the tweet
         clean_tweet = re.sub(r"http\S+", "", tweet_data[2])
@@ -145,22 +140,15 @@ def load_tweets():
                                 place_id=tweet_data[5],
                                 naive_bayes=nb_classification[0],
                                 referenced_candidate=candidate)
-                print "Tweet added: {}".format(tweet.tweet_id)
                 db.session.add(tweet)
                 db.session.flush()
-            except FlushError:
-
+                db.session.commit()                
+                print "Tweet added: {}, {}".format(tweet.tweet_id, tweet.timestamp)
+            except sqlalchemy.exc.IntegrityError:
+                print "******flush or integrity error, rolling back! : {}, {}".format(tweet.tweet_id, tweet.timestamp)
                 # Preventing duplicate tweets from accidentally being added
                 db.session.rollback()
                 continue
-
-    db.session.commit()
-
-    count += 1
-    starting_line += 1
-    if count % 100 == 0:
-        db.session.commit()
-
 
 
 ################################################################################
@@ -214,6 +202,7 @@ def load_tweetkeywords():
     db.session.commit()
 
 
+
 ################################################################################
 
 
@@ -225,8 +214,8 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data
-    load_users()
-    load_candidates()
+    # load_users()
+    # load_candidates()
     load_tweets()
     load_keywords()
     load_tweetkeywords()

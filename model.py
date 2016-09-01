@@ -18,6 +18,10 @@ class User(db.Model):
     handle = db.Column(db.String(80), nullable=False, unique=True)
 
 
+################################################################################
+
+
+
 class Candidate(db.Model):
     """Table for each candidate (both for president and vp)"""
 
@@ -28,6 +32,10 @@ class Candidate(db.Model):
     full_name = db.Column(db.String(25), nullable=False)
     position = db.Column(db.String(2), nullable=False)
     party_affiliation = db.Column(db.String(10), nullable=False)
+
+
+################################################################################
+
 
 
 class Tweet(db.Model):
@@ -71,6 +79,10 @@ class Tweet(db.Model):
 
 
 
+################################################################################
+
+
+
 
 class Keyword(db.Model):
     """Specific campaign specific keywords with designated word affiliations"""
@@ -90,6 +102,8 @@ class Keyword(db.Model):
 
 
 
+################################################################################
+
 
 
 class TweetKeyword(db.Model):
@@ -102,8 +116,8 @@ class TweetKeyword(db.Model):
     keyword_id = db.Column(db.Integer, db.ForeignKey(Keyword.keyword_id), nullable=False)
 
 
-# TO IMPLEMENT: Table that checks when the last time you collected data would be
-## if it has been long enough, starts collecting data
+
+################################################################################
 
 
 def connect_to_db(app):
@@ -113,6 +127,11 @@ def connect_to_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///sentiments'
     db.app = app
     db.init_app(app)
+
+################################################################################
+
+# TO IMPLEMENT: Table that checks when the last time you collected data would be
+## if it has been long enough, starts collecting data
 
 
 if __name__ == "__main__":

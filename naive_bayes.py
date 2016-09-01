@@ -48,6 +48,10 @@ def load_training_data():
     return tweet_text, tweet_sentiment
 
 
+################################################################################
+
+
+
 def preprocess_training():
     """
     Create a frequency matrix for the review data set
@@ -75,6 +79,9 @@ def preprocess_training():
 
     print text_matrix
     return text_matrix, sentiment
+
+
+################################################################################
 
 
 def train_model(data, target):
@@ -111,12 +118,18 @@ def train_model(data, target):
     return classifier
 
 
+################################################################################
+
+
 
 def evaluate_model(true_sentiment, predicted_sentiment):
     """Prints out evaluation statistics from scikits library"""
 
     print classification_report(true_sentiment, predicted_sentiment)
     print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
+
+
+################################################################################
 
 
 
@@ -142,6 +155,7 @@ def run_classifier(to_classify):
     return sentiment_classification
 
 
+################################################################################
 
 
 
