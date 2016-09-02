@@ -124,6 +124,9 @@ def load_page_and_parse():
     driver = webdriver.Firefox()
 
     stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
+
+    # Could automatically read in the last date from the last set of tweets 
+    
     # stop_date = datetime.datetime.strptime("2016-01-02", "%Y-%m-%d") 
     # tweets_until = "2016-01-02"
     tweets_until = stop_date.date()

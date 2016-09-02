@@ -55,6 +55,8 @@ def sort_location():
         location_sorted[location][tweet.referenced_candidate][tweet.naive_bayes] += 1
 
 
+    # Could potentially store in database as well (as view or seperate database)
+    # Could be useful for capturing timeseries 
 
     print location_sorted
     return location_sorted

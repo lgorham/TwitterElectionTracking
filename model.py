@@ -120,6 +120,58 @@ class TweetKeyword(db.Model):
 ################################################################################
 
 
+def example_data():
+    """Create sample data for testing purposes"""
+
+    # Creating users
+    user1 = User(handle='@generictrumpsupporter')
+    user2 = User(handle='@genericclintonsupporter')
+    user3 = User(handle='@mythicalswingvoter')
+
+    # Creating candidates
+    clinton = Candidate(name='Clinton', 
+                        full_name='Hillary Clinton', 
+                        position='P', 
+                        party_affiliation='Democrat')
+
+    trump = Candidate(name='Trump', 
+                        full_name='Donald Trump', 
+                        position='P', 
+                        party_affiliation='Republican')
+
+    both = Candidate(name='Both', 
+                        full_name='Both', 
+                        position='P', 
+                        party_affiliation='Both')
+
+    # Creating tweets for each user
+    tweet1 = Tweet(tweet_id='1', 
+                    user_id='2', 
+                    referenced_candidate='Trump',
+                    text='Ranting about immigrants! Yay Trump! #MAGA',
+                    naive_bayes='pos',
+                    profile_location='Jackson, Mississippi',
+                    place_id=None)
+
+    tweet2 = Tweet(tweet_id='2', 
+                    user_id='1', 
+                    referenced_candidate='Clinton',
+                    text='So proud of our first woman nominee, Hillary Clinton! #HillYes',
+                    naive_bayes='pos',
+                    profile_location='Manhattan, NY',
+                    place_id=None)
+
+    tweet3 = Tweet(tweet_id='3', 
+                    user_id='3', 
+                    referenced_candidate='Both',
+                    text='I refuse to vote for either Trump or Clinton because their policies are not prefectly consistant with my ideaologies #CrookedHillary #DumpTrump',
+                    naive_bayes='neg',
+                    profile_location='Berkeley, CA',
+                    place_id=None)
+
+################################################################################
+
+
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 

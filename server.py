@@ -71,26 +71,26 @@ def pos_line_chart(candidate):
     Generate a json object for sentiment line chart using global dictionary
 
         >>> pos_line_chart('Clinton')
-            {"label": "",
-            "fill": False, 
-            "lineTension": 0.5, 
-            "backgroundColor": 'rgba(143, 211, 228, 0.2)', 
-            "borderColor": 'rgba(143, 211, 228,1)', 
-            "borderCapStyle": 'butt', 
-            "borderDash": [], 
-            "borderDashOffset": 0.0, 
-            "borderJoinStyle": 'miter', 
-            "pointBorderColor": 'rgba(143, 211, 228,1)', 
-            "pointBackgroundColor": "#fff", 
-            "pointBorderWidth": 1, 
-            "pointHoverRadius": 5, 
-            "pointHoverBackgroundColor": "#fff", 
-            "pointHoverBorderColor": 'rgba(143, 211, 228,1)', 
-            "pointHoverBorderWidth": 2, 
-            "pointRadius": 3, 
-            "pointHitRadius": 10, 
-            "data": [0], 
-            "spanGaps": False}}
+        {"label": "",
+        "fill": False, 
+        "lineTension": 0.5, 
+        "backgroundColor": 'rgba(143, 211, 228, 0.2)', 
+        "borderColor": 'rgba(143, 211, 228,1)', 
+        "borderCapStyle": 'butt', 
+        "borderDash": [], 
+        "borderDashOffset": 0.0, 
+        "borderJoinStyle": 'miter', 
+        "pointBorderColor": 'rgba(143, 211, 228,1)', 
+        "pointBackgroundColor": "#fff", 
+        "pointBorderWidth": 1, 
+        "pointHoverRadius": 5, 
+        "pointHoverBackgroundColor": "#fff", 
+        "pointHoverBorderColor": 'rgba(143, 211, 228,1)', 
+        "pointHoverBorderWidth": 2, 
+        "pointRadius": 3, 
+        "pointHitRadius": 10, 
+        "data": [0], 
+        "spanGaps": False}}
     """
 
     chart_specs = {
@@ -116,8 +116,6 @@ def pos_line_chart(candidate):
                 "spanGaps": False}
 
     return chart_specs
-
-
 
 
 ################################################################################
@@ -169,7 +167,8 @@ def homepage():
 
 @app.route("/sentiment_data.json")
 def load_csv():
-    """Load in data from csv format"""
+    """Load in data from csv format
+    """
 
 
     options = {"clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
@@ -237,6 +236,11 @@ def sum_comparison():
     clinton_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Clinton").all()
     trump_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Trump").all()
     both_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Both").all()
+
+    # Potentially - backup database - have flask check which database it should be connected to
+    # And from then, use given data source 
+    # Could come in with AJAX
+    # Also could connect to which server
 
 
     datasets = []
