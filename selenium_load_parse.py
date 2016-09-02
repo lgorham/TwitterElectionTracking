@@ -166,7 +166,7 @@ def update_database():
     if a week has passed, restart the scraping process
     """
 
-    
+
 
 
 ################################################################################

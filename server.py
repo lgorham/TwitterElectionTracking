@@ -14,7 +14,14 @@ app.secret_key = "h65Tgx4RTzS21"
 
 
 def load_sentiment_data(filename):
-    """Load file with sentiment data for a given candidate"""
+    """
+    Load file with sentiment data for a given candidate, and returns a list of lists
+    containing data on dates, number of negative tweets on that day, and number of
+    positive tweets on that day
+
+        >>> load_sentiment_data("test_data/sentiment_data_test.txt")
+        [['2016/01/01', '2016/01/02'], ['704', '832'], ['125', '781']]
+    """
 
     dates = []
     pos_scores = []
@@ -28,7 +35,8 @@ def load_sentiment_data(filename):
         pos_scores.append(items[2])
 
 
-    return [dates, pos_scores, neg_scores]
+
+    return [dates, neg_scores, pos_scores]
 
 
 
@@ -37,7 +45,13 @@ def load_sentiment_data(filename):
 
 
 def load_location_data(filename):
-    """Load file with location based data"""
+    """
+    Load file with location based data - returns a list containing tuples with the latlong
+    geotagged in the tweets, the number of tweets for a particular candidate/valence
+
+        >>> load_location_data('test_data/location_data_test.txt')
+        [({'lat': 33.836081, 'lng': -81.1637245}, 4.0, 'Trump', 'neg'), ({'lat': 42.9506714, 'lng': -73.2636079}, 1.0, 'Both', 'neg')]
+    """
 
     location_data = []
 
@@ -53,7 +67,31 @@ def load_location_data(filename):
 
 
 def pos_line_chart(candidate):
-    """Generate a json object for sentiment line chart"""
+    """
+    Generate a json object for sentiment line chart using global dictionary
+
+        >>> pos_line_chart('Clinton')
+            {"label": "",
+            "fill": False, 
+            "lineTension": 0.5, 
+            "backgroundColor": 'rgba(143, 211, 228, 0.2)', 
+            "borderColor": 'rgba(143, 211, 228,1)', 
+            "borderCapStyle": 'butt', 
+            "borderDash": [], 
+            "borderDashOffset": 0.0, 
+            "borderJoinStyle": 'miter', 
+            "pointBorderColor": 'rgba(143, 211, 228,1)', 
+            "pointBackgroundColor": "#fff", 
+            "pointBorderWidth": 1, 
+            "pointHoverRadius": 5, 
+            "pointHoverBackgroundColor": "#fff", 
+            "pointHoverBorderColor": 'rgba(143, 211, 228,1)', 
+            "pointHoverBorderWidth": 2, 
+            "pointRadius": 3, 
+            "pointHitRadius": 10, 
+            "data": [0], 
+            "spanGaps": False}}
+    """
 
     chart_specs = {
                 "label": "",
@@ -143,7 +181,7 @@ def load_csv():
     datasets = []
 
     for option in options.keys():
-        dates, pos_nums, neg_nums = load_sentiment_data(option)
+        dates, neg_nums, pos_nums = load_sentiment_data(option)
 
         pos_json_object = pos_line_chart(options[option]["candidate"])
         pos_json_object["label"] = options[option]["pos_label"]
@@ -247,9 +285,17 @@ def load_maps_data():
 
 
 if __name__ == "__main__":
-    app.debug = True
-    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-    DebugToolbarExtension(app)
-    connect_to_db(app)
-    app.run(host='0.0.0.0')
+    import doctest
+
+    print
+    result = doctest.testmod()
+    if not result.failed:
+        print "ALL TESTS PASSED. GOOD WORK!"
+    print
+
+    # app.debug = True
+    # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+    # DebugToolbarExtension(app)
+    # connect_to_db(app)
+    # app.run(host='0.0.0.0')
 
