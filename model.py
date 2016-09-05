@@ -130,7 +130,7 @@ def example_data():
 
     # Creating candidates
     clinton = Candidate(name='Clinton', 
-                        full_name='Hillary Clinton', 
+                        full_name='Hiltlary Clinton', 
                         position='P', 
                         party_affiliation='Democrat')
 
@@ -148,7 +148,7 @@ def example_data():
     tweet1 = Tweet(tweet_id='1', 
                     user_id='2', 
                     referenced_candidate='Trump',
-                    text='Ranting about immigrants! Yay Trump! #MAGA',
+                    text='Yay Trump! #MAGA',
                     naive_bayes='pos',
                     profile_location='Jackson, Mississippi',
                     place_id=None)
@@ -164,10 +164,13 @@ def example_data():
     tweet3 = Tweet(tweet_id='3', 
                     user_id='3', 
                     referenced_candidate='Both',
-                    text='I refuse to vote for either Trump or Clinton because their policies are not prefectly consistant with my ideaologies #CrookedHillary #DumpTrump',
+                    text='I hate both of the candidates #CrookedHillary #DumpTrump',
                     naive_bayes='neg',
-                    profile_location='Berkeley, CA',
+                    profile_location='Denver, CO',
                     place_id=None)
+
+    db.session.add_all([user1, user2, user3, clinton, trump, both, tweet1, tweet2, tweet3])
+    db.session.commit()
 
 ################################################################################
 

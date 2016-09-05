@@ -41,7 +41,7 @@ def parse_tweet(tweet):
 
     date_timestamp = datetime.datetime.fromtimestamp(float(timestamp))
 
-    return [handle, tweet_id, content, timestamp, profile_location, place_id]
+    return [handle, tweet_id, content, date_timestamp, timestamp, profile_location, place_id]
 
 
 
@@ -63,28 +63,18 @@ def beatiful_soup_parse(html, last_tweet_date):
     # given the time constraints of the project, the cost of having to repeat the download/parse
     # process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
 
-    data_file = open("data_file.txt", "a")
+    data_file = open("missing_dates.txt", "a")
 
     for tweet in parent_tweets:
-        handle, tweet_id, content, timestamp, profile_location, place_id = parse_tweet(tweet)
+        handle, tweet_id, content, date_timestamp, str_timestamp, profile_location, place_id = parse_tweet(tweet)
 
         # Checks to make sure that these are not tweets from the overlapping timeperiod, and only writes new tweets to file.
         if date_timestamp < last_tweet_date:
-            dataline = "|".join([handle, tweet_id, content, timestamp, profile_location, place_id])
+            dataline = "|".join([handle, tweet_id, content, str_timestamp, profile_location, place_id])
             data_file.write("{}\n".format(dataline))
 
 
     data_file.close()
-
-
-    # Evaluating timestamp to ensure that the next Twitter search does not miss a day of tweets
-    if date_timestamp.hour <= 17:
-        until_date = date_timestamp + datetime.timedelta(days=1)
-
-    else:
-        until_date = date_timestamp + datetime.timedelta(days=2)
-
-    return until_date
 
 
 
@@ -96,16 +86,22 @@ def stop_date_evaluation(stop_date, tweets_until):
     """
     Evaluates whether or not the date returned from parsing is a repeat of the last date,
     and if so, subtracts another day in order to not repeat scraping
-    """
 
+        >>> stop_date = datetime.datetime.strptime("2016-06-08", "%Y-%m-%d")
+        >>> tweets_until = datetime.datetime.strptime("2016-06-08", "%Y-%m-%d")
+        >>> stop_date_evaluation(stop_date, tweets_until)
+        2016-06-07
+
+    """
+    date_errors = open("missing_date_errors.txt", "a")
     if stop_date.date() == tweets_until:
             repeats = "|".join([str(stop_date.date())])
             date_errors.write("{}\n".format(repeats))
             tweets_until = stop_date - datetime.timedelta(days=1)
             tweets_until = tweets_until.date()
 
-        else:
-            tweets_until = stop_date.date()
+    else:
+        tweets_until = stop_date.date()
 
     return tweets_until
 
@@ -126,12 +122,11 @@ def load_page_and_parse():
     stop_date = datetime.datetime.today() + datetime.timedelta(days=1)
 
     # Could automatically read in the last date from the last set of tweets 
-    
-    # stop_date = datetime.datetime.strptime("2016-01-02", "%Y-%m-%d") 
-    # tweets_until = "2016-01-02"
-    tweets_until = stop_date.date()
 
-    date_errors = open("date_errors.txt", "a")
+    stop_date = datetime.datetime.strptime("2016-08-05", "%Y-%m-%d") 
+    tweets_until = "2016-08-05"
+    # tweets_until = stop_date.date()
+
     
     # An infinite loop - since Twitter's Advanced Search will continue to load past the "end date" you specify.
     while True:
@@ -148,12 +143,12 @@ def load_page_and_parse():
 
 
         html = driver.page_source
-        stop_date = beatiful_soup_parse(html, stop_date)
+        beatiful_soup_parse(html, stop_date)
+        stop_date = stop_date - datetime.timedelta(days=1)
 
         tweets_until = stop_date_evaluation(stop_date, tweets_until)
 
         print "tweets until: {}".format(tweets_until)
-        count_down -= 1
         
     driver.quit()
 
@@ -178,3 +173,12 @@ def update_database():
 if __name__ == '__main__':
 
     load_page_and_parse()
+
+    import doctest
+
+    print
+    result = doctest.testmod()
+    if not result.failed:
+        print "ALL TESTS PASSED. GOOD WORK!"
+    print
+

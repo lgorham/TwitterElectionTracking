@@ -6,7 +6,8 @@ import jinja2
 from model import Tweet, Candidate, connect_to_db, db
 from datetime import datetime
 import sqlalchemy
-from global_dicts import POSITIVE_COLORS, NEGATIVE_COLORS, GOOGLE_MAPS_COLORS
+from sqlalchemy import func
+from global_dicts import POSITIVE_COLORS, NEGATIVE_COLORS, GOOGLE_MAPS_COLORS, SEED_DATA_DIR
 
 
 app = Flask(__name__)
@@ -70,27 +71,17 @@ def pos_line_chart(candidate):
     """
     Generate a json object for sentiment line chart using global dictionary
 
-        >>> pos_line_chart('Clinton')
-        {"label": "",
-        "fill": False, 
-        "lineTension": 0.5, 
-        "backgroundColor": 'rgba(143, 211, 228, 0.2)', 
-        "borderColor": 'rgba(143, 211, 228,1)', 
-        "borderCapStyle": 'butt', 
-        "borderDash": [], 
-        "borderDashOffset": 0.0, 
-        "borderJoinStyle": 'miter', 
-        "pointBorderColor": 'rgba(143, 211, 228,1)', 
-        "pointBackgroundColor": "#fff", 
-        "pointBorderWidth": 1, 
-        "pointHoverRadius": 5, 
-        "pointHoverBackgroundColor": "#fff", 
-        "pointHoverBorderColor": 'rgba(143, 211, 228,1)', 
-        "pointHoverBorderWidth": 2, 
-        "pointRadius": 3, 
-        "pointHitRadius": 10, 
-        "data": [0], 
-        "spanGaps": False}}
+        >>> dict = pos_line_chart('Clinton')
+        >>> dict['backgroundColor']
+        'rgba(143, 211, 228, 0.2)'
+
+        >>> dict = pos_line_chart('Trump')
+        >>> dict['borderColor']
+        'rgba(253, 175, 175,1)'
+
+        >>> dict = pos_line_chart('Both')
+        >>> dict['pointBorderColor']
+        'rgba(128, 239, 133, 1)'
     """
 
     chart_specs = {
@@ -124,7 +115,22 @@ def pos_line_chart(candidate):
 
 
 def neg_line_chart(candidate):
-    """Generate a json object for sentiment line chart"""
+    """Generate a json object for sentiment line chart using a global dictionary
+
+        >>> dict = neg_line_chart('Clinton')
+        >>> dict['pointHoverBorderColor']
+        'rgba(55,7,247,1)'
+
+        >>> dict = neg_line_chart('Trump')
+        >>> dict['pointBorderColor']
+        'rgba(182,6,6,1)'
+
+        >>> dict = neg_line_chart('Both')
+        >>> dict['backgroundColor']
+        'rgba(20, 163, 27, 0.2)'
+
+
+    """
 
 
     chart_specs = {
@@ -171,9 +177,9 @@ def load_csv():
     """
 
 
-    options = {"clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
-            "trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"},
-            "both_data.txt" : {"pos_label" : "Both Referenced - Positive", "neg_label": "Both Referenced - Negative", "candidate" : "Both"}}
+    options = {SEED_DATA_DIR + "/clinton_data.txt" : {"pos_label": "Clinton - Positive", "neg_label": "Clinton - Negative", "candidate" : "Clinton"},
+            SEED_DATA_DIR + "/trump_data.txt" : {"pos_label": "Trump - Positive", "neg_label": "Trump - Negative", "candidate" : "Trump"},
+            SEED_DATA_DIR + "/both_data.txt" : {"pos_label" : "Both Referenced - Positive", "neg_label": "Both Referenced - Negative", "candidate" : "Both"}}
 
              
 
@@ -208,12 +214,11 @@ def load_clinton_donut(candidate):
     """Create donut chart representing total neg/pos of tweets about the passed in candidate"""
 
 
-    pos_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == candidate)).all()
-    neg_tweets = db.session.query(Tweet).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == candidate)).all()
+    pos_tweets = db.session.query(func.count(Tweet.tweet_id)).filter((Tweet.naive_bayes == "pos") & (Tweet.referenced_candidate == candidate)).one()
+    neg_tweets = db.session.query(func.count(Tweet.tweet_id)).filter((Tweet.naive_bayes == "neg") & (Tweet.referenced_candidate == candidate)).one()
 
-
-    datasets = [{"data" : [len(pos_tweets), len(neg_tweets)], 
-                "backgroundColor" : [POSITIVE_COLORS[candidate]["backgroundColor"], NEGATIVE_COLORS[candidate]["backgroundColor"]]}]
+    datasets = [{"data" : [pos_tweets[0], neg_tweets[0]], 
+                "backgroundColor" : [POSITIVE_COLORS[candidate]["borderColor"], NEGATIVE_COLORS[candidate]["borderColor"]]}]
    
 
     donut_json = {
@@ -233,9 +238,9 @@ def load_clinton_donut(candidate):
 def sum_comparison():
     """Create horizontal chart representing total neg/pos of tweets about Clinton"""
 
-    clinton_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Clinton").all()
-    trump_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Trump").all()
-    both_tweets = db.session.query(Tweet).filter(Tweet.referenced_candidate == "Both").all()
+    clinton_tweets = db.session.query(func.count(Tweet.tweet_id)).filter(Tweet.referenced_candidate == 'Clinton').one()    
+    trump_tweets = db.session.query(func.count(Tweet.tweet_id)).filter(Tweet.referenced_candidate == 'Trump').one()
+    both_tweets = db.session.query(func.count(Tweet.tweet_id)).filter(Tweet.referenced_candidate == 'Both').one()
 
     # Potentially - backup database - have flask check which database it should be connected to
     # And from then, use given data source 
@@ -244,7 +249,7 @@ def sum_comparison():
 
 
     datasets = []
-    datasets.append({"data" : [len(clinton_tweets), len(trump_tweets), len(both_tweets)], 
+    datasets.append({"data" : [clinton_tweets[0], trump_tweets[0], both_tweets[0]], 
                     "backgroundColor" : ["rgba(55,7,247,1)", "rgba(182,6,6,1)", "rgba(17, 130, 53, 1)"], 
                     "label": "All Tweets"})
                     
@@ -265,7 +270,6 @@ def load_maps_data():
     """Create json object for google maps API"""
 
     location_data = load_location_data("seed_data/location_data.txt")
-    print location_data
 
     json_list = []
 
@@ -274,7 +278,6 @@ def load_maps_data():
         location_specs = {"coordinates": location[0],
                         "num_tweets": float(location[1]), 
                         "color": GOOGLE_MAPS_COLORS[location[2]][location[3]]}
-        print location_specs
 
         json_list.append(location_specs)
 
@@ -289,17 +292,17 @@ def load_maps_data():
 
 
 if __name__ == "__main__":
-    import doctest
+    # import doctest
 
-    print
-    result = doctest.testmod()
-    if not result.failed:
-        print "ALL TESTS PASSED. GOOD WORK!"
-    print
-
-    # app.debug = True
+    # print
+    # result = doctest.testmod()
+    # if not result.failed:
+    #     print "ALL TESTS PASSED"
+    # print
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.debug = True
     # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     # DebugToolbarExtension(app)
-    # connect_to_db(app)
-    # app.run(host='0.0.0.0')
+    connect_to_db(app)
+    app.run(host='0.0.0.0')
 

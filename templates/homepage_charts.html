@@ -93,28 +93,34 @@
           });
         }
 
-        // $.get("/donut_chart.json/Trump", function (data) {
-        //     generate_donut(data, trump_donut_chart)
-        // });
+        var trump_donut_chart = $("#trumpDonut").get(0).getContext("2d");
 
-        // $.get("/donut_chart.json/Clinton", function (data) {
-        //     generate_donut(data, clinton_donut_chart)
-        // });
+        $.get("/donut_chart.json/Trump", function (data) {
+            generate_donut(data, trump_donut_chart)
+        });
 
-        // $.get("/donut_chart.josn/Both", function (data) {
-        //     generate_donut(data, both_donut_chart)
-        // })
+        var clinton_donut_chart = $("#clintonDonut").get(0).getContext("2d");
+
+        $.get("/donut_chart.json/Clinton", function (data) {
+            generate_donut(data, clinton_donut_chart)
+        });
+
+        var both_donut_chart = $("#bothDonut").get(0).getContext("2d");
+
+        $.get("/donut_chart.json/Both", function (data) {
+            generate_donut(data, both_donut_chart)
+        })
 
 
         // Bar chart showing comparison between Trump, Clinton and Both
         var total_comparison_chart = $("#totalComparison").get(0).getContext("2d");
 
-        // $.get("/sum_comparison.json", function (data) {
-        //   var horizontalBar = new Chart(total_comparison_chart, {
-        //                                 type: "horizontalBar",
-        //                                 data: data
-        //                                   });
-        //                                 });
+        $.get("/sum_comparison.json", function (data) {
+          var horizontalBar = new Chart(total_comparison_chart, {
+                                        type: "horizontalBar",
+                                        data: data
+                                          });
+                                        });
 
 
           // Initialize Google Map - Grayscale for style
@@ -323,7 +329,7 @@
               path: google.maps.SymbolPath.CIRCLE,
               fillColor: color,
               fillOpacity: .2,
-              scale: tweets*5,
+              scale: tweets**(1/2),
               strokeColor: 'white',
               strokeWeight: .5
             };
@@ -345,21 +351,21 @@
               icon: getCircle(num_tweets, color)
               });
 
-            infoHTML = (
-              '<div class="window-content">' +
-                  '<p><b>Number of Tweets: </b>' + num_tweets + '</p>' +
-              '</div>');
+            // infoHTML = (
+            //   '<div class="window-content">' +
+            //       '<p><b>Number of Tweets: </b>' + num_tweets + '</p>' +
+            //   '</div>');
 
-            bindInfoWindow(marker, map, infoWindow, infoHTML);
+            // bindInfoWindow(marker, map, infoWindow, infoHTML);
 
-            function bindInfoWindow(marker, map, infoWindow, infoHTML) {
-              google.maps.event.addListener(marker, 'mouseover', function(){
-              infoWindow.close(map, this);
-              infoWindow.setContent(infoHTML)
-              infoWindow.open(map, this);
-            });
+            // function bindInfoWindow(marker, map, infoWindow, infoHTML) {
+            //   google.maps.event.addListener(marker, 'mouseover', function(){
+            //   infoWindow.close(map, this);
+            //   infoWindow.setContent(infoHTML)
+            //   infoWindow.open(map, this);
+            // });
 
-            }
+            // }
 
 
             // google.maps.event.addListener(marker, 'mouseout', function() {

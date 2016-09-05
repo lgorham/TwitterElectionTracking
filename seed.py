@@ -19,7 +19,7 @@ def load_users():
 
     # Deleting all existing rows so we don't duplicate -might want to take out if I'm update my database?
     # Or create different 'update' function
-    User.query.delete()
+    # User.query.delete()
 
     for row in open("seed_data/data_file.txt"):
         row = row.rstrip()
@@ -45,7 +45,7 @@ def load_users():
 def load_candidates():
     """Load presidential and vice presidential candidates"""
 
-    Candidate.query.delete()
+    # Candidate.query.delete()
 
     for row in open("seed_data/candidates.txt"):
         row = row.rstrip()
@@ -159,7 +159,7 @@ def load_tweets():
 def load_keywords():
     """Load keywords from predefined set of tagged keywords"""
 
-    Keyword.query.delete()
+    # Keyword.query.delete()
 
     for row in open("seed_data/keywords.txt"):
         row = row.rstrip()
@@ -179,7 +179,7 @@ def load_tweetkeywords():
     table linking tweets and keywords
     """
 
-    TweetKeyword.query.delete()
+    # TweetKeyword.query.delete()
 
     tweets = Tweet.query.all()
     keyword_query = Keyword.query.all()

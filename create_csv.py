@@ -20,14 +20,24 @@ def sort_by_datetime():
 
     date_sorted = {}
 
-    tweets = Tweet.query.all()
-    print len(tweets)
+    start = 0
+    step = 10000
+    stop = step
+    tweets = True
 
-    for tweet in tweets:
-        date_string = tweet.timestamp.strftime('%Y/%m/%d')
-        date_sorted[date_string] = date_sorted.setdefault(date_string, deepcopy(CANDIDATE_COUNTS))
+    while tweets:
+        tweets = db.session.query(Tweet).filter(Tweet.timestamp >= '2016-01-01').order_by(Tweet.timestamp).slice(start, stop).all()
+        print len(tweets)
 
-        date_sorted[date_string][tweet.referenced_candidate][tweet.naive_bayes] += 1
+        for tweet in tweets:
+            date_string = tweet.timestamp.strftime('%Y/%m/%d')
+            print date_string
+            date_sorted[date_string] = date_sorted.setdefault(date_string, deepcopy(CANDIDATE_COUNTS))
+
+            date_sorted[date_string][tweet.referenced_candidate][tweet.naive_bayes] += 1
+
+        start = stop
+        stop = stop + step 
 
     print date_sorted
     return date_sorted
@@ -45,18 +55,23 @@ def sort_location():
     """
 
     location_sorted = {}
+    start = 0
+    step = 10000
+    stop = step
+    tweets = True
 
-    location_tweets = Tweet.query.filter(Tweet.profile_location != None).all()
+    while tweets:
+        tweets = Tweet.query.filter(Tweet.profile_location != None).slice(start, stop).all()
 
-    for tweet in location_tweets:
-        location = tweet.profile_location
-        location_sorted[location] = location_sorted.setdefault(location, deepcopy(CANDIDATE_COUNTS))
+        for tweet in tweets:
+            location = tweet.profile_location
+            location_sorted[location] = location_sorted.setdefault(location, deepcopy(CANDIDATE_COUNTS))
 
-        location_sorted[location][tweet.referenced_candidate][tweet.naive_bayes] += 1
+            location_sorted[location][tweet.referenced_candidate][tweet.naive_bayes] += 1
 
+        start = stop
+        stop = stop + step
 
-    # Could potentially store in database as well (as view or seperate database)
-    # Could be useful for capturing timeseries 
 
     print location_sorted
     return location_sorted
@@ -68,8 +83,11 @@ def sort_location():
 
 
 def sentiment_csv():
-    """Export datetime sorted dictionary to csv format"""
+    """
+    Export datetime sorted dictionary to csv format
+    """
 
+    print "Starting query/export process"
     all_dates = sort_by_datetime()
 
 
@@ -77,14 +95,18 @@ def sentiment_csv():
                 "Trump" : "seed_data/trump_data.txt", 
                 "Both" : "seed_data/both_data.txt"}
 
+    # Could potentially store in database as well (as view or seperate database)
+    # Could be useful for capturing timeseries 
 
-    for date, counts in all_dates.iteritems():
-        
+
+    for date in sorted(all_dates.keys()):
+        counts = all_dates[date]
         for candidate in candidates.keys():
+            print candidate
             negative = counts[candidate]["neg"]
             positive = counts[candidate]["pos"]
             candidate_data = "|".join([date, str(negative), str(positive)])
-            candidate_file = open(candidates[candidate], "w")
+            candidate_file = open(candidates[candidate], "a")
             candidate_file.write("{}\n".format(candidate_data))
             candidate_file.close()
 
@@ -105,23 +127,30 @@ def location_csv():
 
     locations = []
     sentiment_dicts = []
+    count = 0
 
     for location, sentiments in all_locations.iteritems():
+        count +=1
+        print count
+        print location, sentiments
         location = geocoder.google(str(location))
         coordinates = location.latlng
+        if coordinates:
+            print "Coordinates: {}".format(coordinates)
+            print "Lat: {}, Lng: {}".format(coordinates[0], coordinates[1])
 
-        for candidate in candidates:
-            neg = sentiments[candidate[0]]["neg"]
-            pos = sentiments[candidate[0]]["pos"]
+            for candidate in candidates:
+                neg = sentiments[candidate[0]]["neg"]
+                pos = sentiments[candidate[0]]["pos"]
 
-
-            if neg > 0:
-                print neg
-                neg_data = "|".join([str(coordinates[0]), str(coordinates[1]), str(neg), candidate[0], "neg"])
-                location_file.write("{}\n".format(neg_data))
-            if pos > 0: 
-                pos_data = "|".join([str(coordinates[0]), str(coordinates[1]), str(pos), candidate[0], "pos"])
-                location_file.write("{}\n".format(pos_data))
+                if neg > 0:
+                    print "Neg: {}, Candidate: {}".format(neg, candidate[0])
+                    neg_data = "|".join([str(coordinates[0]), str(coordinates[1]), str(neg), candidate[0], "neg"])
+                    location_file.write("{}\n".format(neg_data))
+                if pos > 0: 
+                    print "Pos: {}, Candidate: {}".format(pos, candidate[0])
+                    pos_data = "|".join([str(coordinates[0]), str(coordinates[1]), str(pos), candidate[0], "pos"])
+                    location_file.write("{}\n".format(pos_data))
 
     location_file.close()
         
@@ -129,5 +158,5 @@ def location_csv():
 if __name__ == '__main__':
 
     connect_to_db(app)
-    sentiment_csv()
-    # location_csv()
+    # sentiment_csv()
+    location_csv()
