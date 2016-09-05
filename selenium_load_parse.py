@@ -123,8 +123,8 @@ def load_page_and_parse():
 
     # Could automatically read in the last date from the last set of tweets 
 
-    stop_date = datetime.datetime.strptime("2016-08-05", "%Y-%m-%d") 
-    tweets_until = "2016-08-05"
+    stop_date = datetime.datetime.strptime("2016-08-10", "%Y-%m-%d") 
+    tweets_until = "2016-08-10"
     # tweets_until = stop_date.date()
 
     
