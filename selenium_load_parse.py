@@ -154,7 +154,7 @@ def load_page_and_parse(datestring, scroll_until=400):
         
     driver.quit()
 
-    return tweets_until
+    return stop_date
 
 
 
@@ -176,7 +176,7 @@ def update_database():
 
 if __name__ == '__main__':
 
-    load_page_and_parse("2016-05-06")
+    load_page_and_parse("2016-08-10")
 
     import doctest
 

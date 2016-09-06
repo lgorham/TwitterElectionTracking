@@ -175,7 +175,8 @@ def example_data():
                     profile_location='Denver, CO',
                     place_id=None)
 
-    db.session.add_all([user1, user2, user3, clinton, trump, both, tweet1, tweet2, tweet3])
+
+    db.session.add_all([user1, user2, user3, clinton, trump, both, tweet1, tweet2, tweet3, keyword1, keyword2])
     db.session.commit()
 
 ################################################################################

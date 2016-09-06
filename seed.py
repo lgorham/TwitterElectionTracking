@@ -21,7 +21,7 @@ def load_users():
     # Or create different 'update' function
     # User.query.delete()
 
-    for row in open("missing_dates.txt"):
+    for row in open("missing_dates_2.txt"):
         row = row.rstrip()
         tweet_data = row.split("|")
         try:
@@ -108,7 +108,7 @@ def load_tweets():
 
     # Tweet.query.delete()
 
-    for row in open("missing_dates.txt"):
+    for row in open("missing_dates_2.txt"):
         row = row.rstrip()
         tweet_data = row.split("|")
         handle = tweet_data[0]

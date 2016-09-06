@@ -127,7 +127,7 @@ def neg_line_chart(candidate):
 
         >>> dict = neg_line_chart('Both')
         >>> dict['backgroundColor']
-        'rgba(20, 163, 27, 0.2)'
+        'rgba(17, 130, 53, 0.2)'
 
 
     """
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     if not result.failed:
         print "ALL TESTS PASSED"
     print
-    
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.debug = True
     # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
