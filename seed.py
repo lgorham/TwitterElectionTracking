@@ -21,7 +21,7 @@ def load_users():
     # Or create different 'update' function
     # User.query.delete()
 
-    for row in open("seed_data/data_file.txt"):
+    for row in open("missing_dates.txt"):
         row = row.rstrip()
         tweet_data = row.split("|")
         try:
@@ -108,7 +108,7 @@ def load_tweets():
 
     # Tweet.query.delete()
 
-    for row in open("seed_data/data_file.txt"):
+    for row in open("missing_dates.txt"):
         row = row.rstrip()
         tweet_data = row.split("|")
         handle = tweet_data[0]
@@ -214,8 +214,8 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data
-    # load_users()
+    load_users()
     # load_candidates()
     load_tweets()
-    load_keywords()
-    load_tweetkeywords()
+    # load_keywords()
+    # load_tweetkeywords()

@@ -158,5 +158,5 @@ def location_csv():
 if __name__ == '__main__':
 
     connect_to_db(app)
-    # sentiment_csv()
-    location_csv()
+    sentiment_csv()
+    # location_csv()

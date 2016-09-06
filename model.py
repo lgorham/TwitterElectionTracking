@@ -77,6 +77,9 @@ class Tweet(db.Model):
                                 secondary="tweet_keywords",
                                 backref="keywords")
 
+    def __repr__(self):
+        return "<Tweet id={}>".format(tweet_id)
+
 
 
 ################################################################################
@@ -175,11 +178,11 @@ def example_data():
 ################################################################################
 
 
-def connect_to_db(app):
+def connect_to_db(app, database='postgresql:///sentiments'):
     """Connect the database to our Flask app."""
 
     # Configure to use PostgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///sentiments'
+    app.config['SQLALCHEMY_DATABASE_URI'] = database
     db.app = app
     db.init_app(app)
 
