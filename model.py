@@ -1,6 +1,7 @@
 """Models for twitter election analysis project"""
 
 from flask_sqlalchemy import SQLAlchemy 
+import datetime
 
 
 db = SQLAlchemy()
@@ -126,17 +127,24 @@ class TweetKeyword(db.Model):
 def example_data():
     """Create sample data for testing purposes"""
 
-    # User.query.delete()
-    # Tweet.query.delete()
+    TweetKeyword.query.delete()
+    Keyword.query.delete()
+    Tweet.query.delete()
+    User.query.delete()
+    Candidate.query.delete()
+
 
     # Creating users
-    user1 = User(handle='@generictrumpsupporter')
-    user2 = User(handle='@genericclintonsupporter')
-    user3 = User(handle='@mythicalswingvoter')
+    user1 = User(handle='@generictrumpsupporter',
+                user_id=1)
+    user2 = User(handle='@genericclintonsupporter',
+                user_id=2)
+    user3 = User(handle='@mythicalswingvoter',
+                user_id=3)
 
     # Creating candidates
     clinton = Candidate(name='Clinton', 
-                        full_name='Hiltlary Clinton', 
+                        full_name='Hillary Clinton', 
                         position='P', 
                         party_affiliation='Democrat')
 
@@ -152,31 +160,34 @@ def example_data():
 
     # Creating tweets for each user
     tweet1 = Tweet(tweet_id='1', 
-                    user_id='2', 
+                    user_id=user1.user_id, 
                     referenced_candidate='Trump',
                     text='Yay Trump! #MAGA',
+                    timestamp=datetime.datetime.now(),
                     naive_bayes='pos',
                     profile_location='Jackson, Mississippi',
                     place_id=None)
 
     tweet2 = Tweet(tweet_id='2', 
-                    user_id='1', 
+                    user_id=user2.user_id, 
                     referenced_candidate='Clinton',
                     text='So proud of our first woman nominee, Hillary Clinton! #HillYes',
+                    timestamp=datetime.datetime.now(),
                     naive_bayes='pos',
                     profile_location='Manhattan, NY',
                     place_id=None)
 
     tweet3 = Tweet(tweet_id='3', 
-                    user_id='3', 
+                    user_id=user3.user_id, 
                     referenced_candidate='Both',
                     text='I hate both of the candidates #CrookedHillary #DumpTrump',
+                    timestamp=datetime.datetime.now(),
                     naive_bayes='neg',
                     profile_location='Denver, CO',
                     place_id=None)
 
 
-    db.session.add_all([user1, user2, user3, clinton, trump, both, tweet1, tweet2, tweet3, keyword1, keyword2])
+    db.session.add_all([user1, user2, user3, clinton, trump, both, tweet1, tweet2, tweet3])
     db.session.commit()
 
 ################################################################################

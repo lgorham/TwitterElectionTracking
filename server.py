@@ -222,7 +222,7 @@ def load_clinton_donut(candidate):
    
 
     donut_json = {
-        "labels": ["{} - Positive".format(candidate), "{} - Negative".format(candidate)],
+        "labels": ["Positive", "Negative"],
         "datasets": datasets
     }
 
@@ -293,12 +293,17 @@ def load_maps_data():
 
 if __name__ == "__main__":
     import doctest
+    import sys
 
     print
     result = doctest.testmod()
     if not result.failed:
         print "ALL TESTS PASSED"
     print
+
+    if sys.argv[-1] == "jstest":
+        JS_TESTING_MODE = True
+        
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.debug = True

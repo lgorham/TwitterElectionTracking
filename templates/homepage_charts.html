@@ -11,32 +11,69 @@
     min-height: 100%;
   }
 
-.navbar {
+  .navbar {
   background: 0.5;
   border: none;
   color: #fff;
-}
+  }
+  
+  #sentiment {
+    min-height: 100%;
+    padding: 30px;
+  }
+
+  #donut-comparisons {
+    min-height: 100%;
+    padding: 30px;
+  }
+
   #sentiment_comparison {
-    min-height: 800px;
+    height: 400px;
+    padding: 30px;
+  }
+
+  #tweet-volume {
+    min-height: 100%;
+    padding: 30px;
   }
 
   #map {
     height:700px;
-    padding: 20px;
+    padding: 30px;
   }
 
   #clintonDonut {
-    height: 50px;
+    height: 200px;
   }
 
   #trumpDonut {
-    height: 50px;
+    height: 200px;
   }
 
   #bothDonut {
-    height: 50px;
+    height: 200px;
   }
 
+
+  #about {
+  max-width: 850px;
+  margin: 0 auto 0 auto;
+  padding: 20px;
+}
+
+  .h4 {
+    text-align: center;
+  }
+
+  .h1 {
+    text-align: center;
+  }
+
+  #container {
+    width:300px;   
+    margin:0px auto;   
+    padding: 40px 0;   
+} 
 
 
 
@@ -107,7 +144,7 @@
     <section id="sentiment" class="intro-section">
       <div class="container">
         <div class="row-fluid" style="padding: 10px">
-          <h1> Sentiment Over Time </h1>
+            <h1 class="h1"> Sentiment Over Time </h1>
             <canvas id="sentiment_comparison" width="500" height="300"></canvas>
         </div>
         <br>
@@ -118,10 +155,22 @@
     <section id="donut-comparisons" class="intro-section">
       <div class="container">
         <div class="row-fluid" style="padding: 10px">
-          <h1>Positive/Negative Comparisons By Candidate</h1>
-          <canvas id="clintonDonut" width="600"></canvas>
-          <canvas id="trumpDonut" width="600"></canvas>
-          <canvas id="bothDonut" width="600"></canvas>
+          <h1 class="h1">Positive/Negative Comparisons By Candidate</h1>
+          <br>
+          <br>
+          <div class="col-xs-6">
+            <h4 class="h4"> Clinton </h4>
+            <canvas id="clintonDonut" width="600"></canvas>
+          </div>
+          <div class="col-xs-6">
+            <h4 class="h4"> Trump </h4>
+            <canvas id="trumpDonut" width="600"></canvas>
+          </div>
+          <br>
+          <div class="col-md-6 col-md-offset-3">
+            <h4 class="h4"> Both </h4>
+            <canvas id="bothDonut" width="600"></canvas>
+          </div>
         </div>
         <br>
       </div>
@@ -131,7 +180,9 @@
     <section id="tweet-volume" class="intro-section">
       <div class="container">
         <div class="row-fluid" style="padding: 10px">
-          <h1>Candidate Tweet Volume</h1>
+          <h1 class="h1">Candidate Tweet Volume</h1>
+          <br>
+          <br>
           <canvas id="totalComparison" width="500"></canvas>
         </div>
         <br>
@@ -143,7 +194,9 @@
     <section id="map" class="intro-section">
       <div class="container">
         <div class="row-fluid" style="padding: 10px">
-          <h1>Geolocated Tweets</h1>
+          <h1 class="h1">Geolocated Tweets</h1>
+          <br>
+          <br>
           <div id="map" width="500" height="1000"></div>
         </div>
         <br>
@@ -154,8 +207,7 @@
     <section id="about" class="intro-section">
       <div class="container">
         <div class="row-fluid" style="padding: 10px">
-          <h1>About</h1>
-          <div class="col-xs-12">
+          <h1 class="h1">About</h1>
             <div id="about" width="500" height="1000">
               The data in this project was scraped and parsed from Twitter's live search webpage using Selenium WebDriver and Beautiful Soup. Due to limitations in the data scraping process, the data is limited to a sampling of tweets from each day and should not be used for research purposes.
               <br>
@@ -163,7 +215,6 @@
               The sentiment analysis is conducted using a Bernoulli Naive Bayes classifier trained on a set of hand-tagged training corpus of 500 tweets, classified as either negative or positive
             </div>
           </div>
-        </div>
         <br>
       </div>
     </section>

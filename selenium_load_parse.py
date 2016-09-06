@@ -63,7 +63,7 @@ def beatiful_soup_parse(html, last_tweet_date):
     # given the time constraints of the project, the cost of having to repeat the download/parse
     # process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
 
-    data_file = open("missing_dates_2.txt", "a")
+    data_file = open("august_9_tweets.txt", "a")
 
     for tweet in parent_tweets:
         handle, tweet_id, content, date_timestamp, str_timestamp, profile_location, place_id = parse_tweet(tweet)
@@ -131,16 +131,39 @@ def load_page_and_parse(datestring, scroll_until=400):
     # tweets_until = stop_date.date()
     
     # An infinite loop - since Twitter's Advanced Search will continue to load past the "end date" you specify.
-    while True:
+    count = 1
+    while count:
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
         scroll_until = scroll_until
+
+        # For debugging purposes - delete
+
+        current_count = 0
 
         while scroll_until:
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             scroll_until -= 1
             time.sleep(2)
+
+            ######## debugging for august 9 &###########
+            html = driver.page_source
+
+            soup = BeautifulSoup(html, 'html.parser')
+
+            parent_tweets = soup.findAll("div", {"class" : "tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet "})
+
+            this_page = len(parent_tweets) - current_count
+
+            current_count = len(parent_tweets)
+
+
+            print "tweet count: {}, this page: {}".format(current_count, this_page)
+
+            ######## end debugging ##############
+
+
             print "Time: {}: Scroll: {}".format(datetime.datetime.now(), scroll_until)
 
 
@@ -151,6 +174,7 @@ def load_page_and_parse(datestring, scroll_until=400):
         tweets_until = stop_date_evaluation(stop_date, tweets_until)
 
         print "tweets until: {}".format(tweets_until)
+        count -= 1
         
     driver.quit()
 

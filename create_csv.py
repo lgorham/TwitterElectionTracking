@@ -3,7 +3,7 @@ import csv
 from model import Tweet, Candidate
 from model import connect_to_db, db
 from server import app
-from global_dicts import CANDIDATE_COUNTS
+from global_dicts import CANDIDATE_COUNTS, CANDIDATE_SENTIMENT_FILES, SEED_DATA_DIR
 from copy import deepcopy
 import sys
 import geocoder
@@ -82,7 +82,7 @@ def sort_location():
 
 
 
-def sentiment_csv():
+def sentiment_csv(file_location=SEED_DATA_DIR):
     """
     Export datetime sorted dictionary to csv format
     """
@@ -90,10 +90,10 @@ def sentiment_csv():
     print "Starting query/export process"
     all_dates = sort_by_datetime()
 
+    candidates = {"Clinton" : file_location + "/clinton_data.txt", 
+                              "Trump" : file_location + "/trump_data.txt", 
+                              "Both" : file_location + "/both_data.txt"}
 
-    candidates = {"Clinton" : "seed_data/clinton_data.txt", 
-                "Trump" : "seed_data/trump_data.txt", 
-                "Both" : "seed_data/both_data.txt"}
 
     # Could potentially store in database as well (as view or seperate database)
     # Could be useful for capturing timeseries 
@@ -116,14 +116,14 @@ def sentiment_csv():
 ################################################################################
 
 
-def location_csv():
+def location_csv(file_location=SEED_DATA_DIR):
     """Export location sorted dictionary to csv format"""
 
     all_locations = sort_location()
 
     candidates = db.session.query(Candidate.name).all()
 
-    location_file = open("seed_data/location_data.txt", "w")
+    location_file = open(file_location + "location_data.txt", "w")
 
     locations = []
     sentiment_dicts = []
