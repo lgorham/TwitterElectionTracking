@@ -126,6 +126,9 @@ class TweetKeyword(db.Model):
 def example_data():
     """Create sample data for testing purposes"""
 
+    # User.query.delete()
+    # Tweet.query.delete()
+
     # Creating users
     user1 = User(handle='@generictrumpsupporter')
     user2 = User(handle='@genericclintonsupporter')

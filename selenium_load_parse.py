@@ -63,7 +63,7 @@ def beatiful_soup_parse(html, last_tweet_date):
     # given the time constraints of the project, the cost of having to repeat the download/parse
     # process if I needed to drop my tables at any point was too high to make it a worthwhile tradeoff
 
-    data_file = open("missing_dates.txt", "a")
+    data_file = open("missing_dates_2.txt", "a")
 
     for tweet in parent_tweets:
         handle, tweet_id, content, date_timestamp, str_timestamp, profile_location, place_id = parse_tweet(tweet)
@@ -111,10 +111,13 @@ def stop_date_evaluation(stop_date, tweets_until):
 
 
 
-def load_page_and_parse():
+def load_page_and_parse(datestring, scroll_until=400):
     """
     Instantiates a selenium webdriver, prompts selenium to scroll to bottom of page,
     and call function that parses returned html with BeautifulSoup
+
+        >>> load_page_and_parse('2016-08-02')
+        2016-08-01
     """
 
     driver = webdriver.Firefox()
@@ -123,16 +126,15 @@ def load_page_and_parse():
 
     # Could automatically read in the last date from the last set of tweets 
 
-    stop_date = datetime.datetime.strptime("2016-08-10", "%Y-%m-%d") 
-    tweets_until = "2016-08-10"
+    stop_date = datetime.datetime.strptime(datestring, "%Y-%m-%d") 
+    tweets_until = datestring
     # tweets_until = stop_date.date()
-
     
     # An infinite loop - since Twitter's Advanced Search will continue to load past the "end date" you specify.
     while True:
 
         driver.get("https://twitter.com/search?f=tweets&vertical=news&q=Trump%20OR%20Clinton%20lang%3Aen%20until%3A{}&src=typd&lang=en".format(tweets_until))
-        scroll_until = 400
+        scroll_until = scroll_until
 
         while scroll_until:
 
@@ -152,7 +154,9 @@ def load_page_and_parse():
         
     driver.quit()
 
-    return stop_date
+    return tweets_until
+
+
 
 ################################################################################
 
@@ -172,7 +176,7 @@ def update_database():
 
 if __name__ == '__main__':
 
-    load_page_and_parse()
+    load_page_and_parse("2016-05-06")
 
     import doctest
 

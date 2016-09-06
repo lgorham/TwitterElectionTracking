@@ -124,7 +124,7 @@ def train_model(data, target):
 
 def evaluate_model(true_sentiment, predicted_sentiment):
     """Prints out evaluation statistics from scikits library"""
-
+    print "\n"
     print classification_report(true_sentiment, predicted_sentiment)
     print "The accuracy of the model is: {:.2%}".format(accuracy_score(true_sentiment,predicted_sentiment))
 
@@ -134,7 +134,12 @@ def evaluate_model(true_sentiment, predicted_sentiment):
 
 
 def run_classifier(to_classify):
-    """For importing into seed file to classify full database"""
+    """For importing into seed file to classify full database
+        >>> sample_tweets = ["if you vote or support Hillary Clinton your unamerican and part of the problem", "Happy Anniversary 19th Amendment! In your honor I'm going to go volunteer for the @HillaryClinton campaign tonight. #ImWithHer"]
+        >>> array_results = run_classifier(sample_tweets)
+        >>> array_results[0], array_results[1]
+        ('neg', 'pos')
+    """
 
     # Unpickling the vectorizor and classifier - to avoid having to retrain/vectorize each time
     pickle_file = open('nb_classifier.pickle', 'rb')
@@ -145,13 +150,10 @@ def run_classifier(to_classify):
     vectorizer = pickle.load(pickle_file)
     pickle_file.close()
 
-
     feature_matrix = vectorizer.transform(to_classify)
-    print "Count Vectorizer: {}".format(to_classify)
 
     sentiment_classification = classifier.predict(feature_matrix)
 
-    print sentiment_classification
     return sentiment_classification
 
 
@@ -161,11 +163,16 @@ def run_classifier(to_classify):
 
 if __name__ == "__main__":
 
-    sample_tweets = ["if you vote or support Hillary Clinton your unamerican and part of the problem", 
-    "Happy Anniversary 19th Amendment! In your honor I'm going to go volunteer for the @HillaryClinton campaign tonight. #ImWithHer"]
+    import doctest
+
+    print
+    result = doctest.testmod()
+    if not result.failed:
+        print "ALL TESTS PASSED"
+    print
 
     tf_data, sentiment = preprocess_training()
     classifier = train_model(tf_data, sentiment)
 
-    run_classifier(sample_tweets)
+    # run_classifier(sample_tweets)
 

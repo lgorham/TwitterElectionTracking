@@ -292,13 +292,14 @@ def load_maps_data():
 
 
 if __name__ == "__main__":
-    # import doctest
+    import doctest
 
-    # print
-    # result = doctest.testmod()
-    # if not result.failed:
-    #     print "ALL TESTS PASSED"
-    # print
+    print
+    result = doctest.testmod()
+    if not result.failed:
+        print "ALL TESTS PASSED"
+    print
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.debug = True
     # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
