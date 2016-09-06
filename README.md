@@ -25,7 +25,8 @@ The data for this project was scraped and parsed from Twitter's live search feed
 
 ## <a name="sentimentanalysis"></a>Sentiment Analysis
 Each tweet is classified as 'negative' or 'positive' by using a Bernoulli Naive Bayes classifier, imported from Scikit-Learn. The classifier is trained on a hand-tagged training corpus of 500 tweets from the main body of tweets, in order to provide the most accurate results for the specific domain of election-related tweets. The trained classifier has a accuracy of 79%.
-![](http://imgur.com/a/84xBj)
+
+![naive_bayes](http://i.imgur.com/8knlFX2.png)
 
 Naive Bayes is a probabalistic classifier based upon the underlying assumption that every feature or attribute of an instance is considered independent from all other features. This assumption runs contrary to our knowledge of natural language, as sentences are almost never made up of completely independent words, and this interdependence often helps form [the syntactic and semantic meaning](http://ucrel.lancs.ac.uk/acl/N/N01/N01-1021.pdf) of a sentance. The use of n-grams (sections of words that often appear together) instead of independent words, is a popular way to mitigate the independence assumption by forcing the classifier to examine sections of words. However [current research](http://www.cs.cornell.edu/home/llee/papers/sentiment.pdf) demonstrates that sentiment analysis classification does not gain any benefit from word frequency features, particularly in short documents - such as tweets, and my own experimentation with n-grams did not increase the accuracy of the classifier.
 
