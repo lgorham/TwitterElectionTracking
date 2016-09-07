@@ -3,67 +3,7 @@
 $(document).ready(function () {
 
 
-  // Line chart comparing pos/neg tweets over time, broken down by candidate
-  var line_chart = $("#sentiment_comparison").get(0).getContext("2d");
-
-  //AJAX call to retrieve sentiment data by datetime - xAxis to use datetime from Moment.js
-  $.get("/sentiment_data.json", function (data) {
-    var myLineChart = new Chart(line_chart, {
-                                  type: "line",
-                                  data: data,
-                                  options: {
-                                    responsive: true,
-                                    scales: {
-                                        xAxes: [{
-                                          type: "time",
-                                          time: {
-                                            unit: "month"
-                                          }
-                                        }]
-                                        }
-                                      }
-                                    });
-                                  });
-
-  //Donut chart showing breakdown of neg/pos tweets for each candidate:
-  function generate_donut(data, html_element) {
-    var donutChart = new Chart(html_element, {
-                              type: "doughnut",
-                              data: data
-    });
-  }
-
-  var trump_donut_chart = $("#trumpDonut").get(0).getContext("2d");
-
-  $.get("/donut_chart.json/Trump", function (data) {
-      generate_donut(data, trump_donut_chart)
-  });
-
-  var clinton_donut_chart = $("#clintonDonut").get(0).getContext("2d");
-
-  $.get("/donut_chart.json/Clinton", function (data) {
-      generate_donut(data, clinton_donut_chart)
-  });
-
-  var both_donut_chart = $("#bothDonut").get(0).getContext("2d");
-
-  $.get("/donut_chart.json/Both", function (data) {
-      generate_donut(data, both_donut_chart)
-  })
-
-
-  // Bar chart showing comparison between Trump, Clinton and Both
-  var total_comparison_chart = $("#totalComparison").get(0).getContext("2d");
-
-  $.get("/sum_comparison.json", function (data) {
-    var horizontalBar = new Chart(total_comparison_chart, {
-                                  type: "horizontalBar",
-                                  data: data
-                                    });
-                                  });
-
-
-    // Initialize Google Map - Grayscale for style
+      // Initialize Google Map - Grayscale for style
     var map = new google.maps.Map(document.getElementById("map"), {
       zoom: 12,
       scrollwheel: false,
@@ -317,11 +257,67 @@ $(document).ready(function () {
   });
 
 
+  // Line chart comparing pos/neg tweets over time, broken down by candidate
+  var line_chart = $("#sentiment_comparison").get(0).getContext("2d");
+
+  //AJAX call to retrieve sentiment data by datetime - xAxis to use datetime from Moment.js
+  $.get("/sentiment_data.json", function (data) {
+    var myLineChart = new Chart(line_chart, {
+                                  type: "line",
+                                  data: data,
+                                  options: {
+                                    responsive: true,
+                                    scales: {
+                                        xAxes: [{
+                                          type: "time",
+                                          time: {
+                                            unit: "month"
+                                          }
+                                        }]
+                                        }
+                                      }
+                                    });
+                                  });
+
+  //Donut chart showing breakdown of neg/pos tweets for each candidate:
+  function generate_donut(data, html_element) {
+      html_element.canvas.width = 300;
+      html_element.canvas.height = 300;
+      var donutChart = new Chart(html_element, {
+                              type: "doughnut",
+                              data: data,
+                              options: {"cutoutPercentage" : 75}
+    });
+  }
+
+  var trump_donut_chart = $("#trumpDonut").get(0).getContext("2d");
+
+  $.get("/donut_chart.json/Trump", function (data) {
+      generate_donut(data, trump_donut_chart)
+  });
+
+  var clinton_donut_chart = $("#clintonDonut").get(0).getContext("2d");
+
+  $.get("/donut_chart.json/Clinton", function (data) {
+      generate_donut(data, clinton_donut_chart)
+  });
+
+  var both_donut_chart = $("#bothDonut").get(0).getContext("2d");
+
+  $.get("/donut_chart.json/Both", function (data) {
+      generate_donut(data, both_donut_chart)
+  })
 
 
+  // Bar chart showing comparison between Trump, Clinton and Both
+  var total_comparison_chart = $("#totalComparison").get(0).getContext("2d");
 
-
-
+  $.get("/sum_comparison.json", function (data) {
+    var horizontalBar = new Chart(total_comparison_chart, {
+                                  type: "horizontalBar",
+                                  data: data
+                                    });
+                                  });
 
 
 

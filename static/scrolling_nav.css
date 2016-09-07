@@ -32,43 +32,43 @@ The padding is very important to make sure the scrollspy picks up the right area
 of those sections to manage the look and feel of the site. */
 
 .intro-section {
-    height: 110%;
+    height: 100%;
     width: 100%;
     padding-top: 100px;
     text-align: center;
     background: #fff;
 }
 
-.graph-section {
+.sentiment_section {
     height: 100%;
-    padding-top: 70px;
+    padding-top: 50px;
     text-align: center;
     background: #eee;
 }
 
-.stats-section {
+.donut_section {
     height: 100%;
-    padding-top: 90px;
+    padding-top: 50px;
     text-align: center;
     background: #fff;
 }
-.calculator-section {
-    height: 90%;
-    padding-top: 90px;
+.tweet-volume-section {
+    height: 80%;
+    padding-top: 50px;
     text-align: center;
     background: #eee;
 }
 
-.report-section {
+.map-section {
     height: 130%;
-    padding-top: 80px;
+    padding-top: 50px;
     text-align: center;
     background: #fff;
 }
 
 .about-section {
     height: 100%;
-    padding-top: 80px;
+    padding-top: 50px;
     text-align: center;
     background: #eee;
 }

@@ -5,219 +5,153 @@
 
 {% block content %}
 
-<style>
-
-  #home {
-    min-height: 100%;
-  }
-
-  .navbar {
-  background: 0.5;
-  border: none;
-  color: #fff;
-  }
-  
-  #sentiment {
-    min-height: 100%;
-    padding: 30px;
-  }
-
-  #donut-comparisons {
-    min-height: 100%;
-    padding: 30px;
-  }
-
-  #sentiment_comparison {
-    height: 400px;
-    padding: 30px;
-  }
-
-  #tweet-volume {
-    min-height: 100%;
-    padding: 30px;
-  }
-
-  #map {
-    height:700px;
-    padding: 30px;
-  }
-
-  #clintonDonut {
-    height: 200px;
-  }
-
-  #trumpDonut {
-    height: 200px;
-  }
-
-  #bothDonut {
-    height: 200px;
-  }
-
-
-  #about {
-  max-width: 850px;
-  margin: 0 auto 0 auto;
-  padding: 20px;
-}
-
-  .h4 {
-    text-align: center;
-  }
-
-  .h1 {
-    text-align: center;
-  }
-
-  #container {
-    width:300px;   
-    margin:0px auto;   
-    padding: 40px 0;   
-} 
-
-
-
-</style>
-
-
-  <!-- Home Page -->
-  <section id="home" class="intro-section">
-    <div class="jumbotron">
-        <div class="container">
-          <div class="row-fluid" style="padding: 0px">
-            <h1>We the People</h1>
-            <p>Sentiment Analysis on Political Tweets in the 2016 Election</p>
-          </div>
-        </div>
-        <br>
+<!-- Home Page -->
+<section id="home" class="intro-section">
+  <div class="jumbotron">
+    <div class="container">
+      <div class="row-fluid" style="padding: 0px">
+        <div class="title-page">
+        <h1 id="title">We the People</h1>
+        <p>Sentiment Analysis on Political Tweets in the 2016 Election</p>
       </div>
-    </section>
+      </div>
+    </div>
+    <br>
+  </div>
+</section>
 
 
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container-fluid">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">Home</a>
-            </div>
-
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a class="page-scroll" href="#page-top"></a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#sentiment">Sentiment Over Time</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#donut-comparisons">Positive/Negative Comparison</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#tweet-volume">Candidate Tweet Volume</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#map">Geolocated Tweets</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#about">About</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-
-    <!-- Sentiment Over Time -->
-    <section id="sentiment" class="intro-section">
-      <div class="container">
-        <div class="row-fluid" style="padding: 10px">
-            <h1 class="h1"> Sentiment Over Time </h1>
-            <canvas id="sentiment_comparison" width="500" height="300"></canvas>
-        </div>
-        <br>
+  <!-- Navigation -->
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand page-scroll" href="#page-top">Home</a>
       </div>
-    </section>
 
-    <!-- Sentiment Over Time -->
-    <section id="donut-comparisons" class="intro-section">
-      <div class="container">
-        <div class="row-fluid" style="padding: 10px">
-          <h1 class="h1">Positive/Negative Comparisons By Candidate</h1>
-          <br>
-          <br>
-          <div class="col-xs-6">
-            <h4 class="h4"> Clinton </h4>
-            <canvas id="clintonDonut" width="600"></canvas>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+          <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+          <li class="hidden">
+            <a class="page-scroll" href="#page-top"></a>
+          </li>
+          <li>
+            <a class="page-scroll" href="#map">Geolocated Tweets</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="#sentiment">Sentiment Over Time</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="#donut-comparisons">Positive/Negative Comparison</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="#tweet-volume">Candidate Tweet Volume</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="#about">About</a>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+
+  <!-- Map -->
+  <section id="map" class="map-section">
+    <div class="container">
+      <div class="row-fluid" style="padding: 30px">
+        <h2 class="h2">Geolocated Tweets</h2>
+        <br>
+        <br>
+        <div id="map" width="500" height="1000"></div>
+      </div>
+      <br>
+    </div>
+  </section>
+
+  <!-- Sentiment Over Time -->
+  <section id="sentiment" class="sentiment-section">
+    <div class="container">
+      <div class="row-fluid" style="padding: 10px">
+        <h1 class="h1"> Sentiment Over Time </h1>
+        <canvas id="sentiment_comparison" width="500" height="300"></canvas>
+      </div>
+      <br>
+    </div>
+  </section>
+
+  <!-- Donut Comparisons -->
+  <section id="donut-comparisons" class="donut-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2 class="h2">Positive/Negative Comparisons By Candidate</h2>
+        </div>
+      </div>
+      <div class="row donut-row">
+        <div class="col-xs-4">
+          <h2 class="h4"> Clinton </h4>
+          <div class="size-constraint">
+            <canvas id="clintonDonut" height="100px" class="donut"></canvas>
           </div>
-          <div class="col-xs-6">
-            <h4 class="h4"> Trump </h4>
-            <canvas id="trumpDonut" width="600"></canvas>
-          </div>
-          <br>
-          <div class="col-md-6 col-md-offset-3">
-            <h4 class="h4"> Both </h4>
-            <canvas id="bothDonut" width="600"></canvas>
+        </div>
+        <div class="col-xs-4">
+          <h4 class="h4"> Trump </h4>
+          <div class="size-constraint">
+            <canvas id="trumpDonut" height="100px" class="donut"></canvas>
           </div>
         </div>
-        <br>
-      </div>
-    </section>
-
-    <!-- Sentiment Over Time -->
-    <section id="tweet-volume" class="intro-section">
-      <div class="container">
-        <div class="row-fluid" style="padding: 10px">
-          <h1 class="h1">Candidate Tweet Volume</h1>
-          <br>
-          <br>
-          <canvas id="totalComparison" width="500"></canvas>
+        <div class="col-xs-4">
+          <h4 class="h4"> Both </h4>
+          <div class="size-constraint">
+            <canvas id="bothDonut" height="100px" class="donut"></canvas>
+          <div>
         </div>
-        <br>
       </div>
-    </section>
+    </div>
+  </section>
 
 
-    <!-- Map -->
-    <section id="map" class="intro-section">
-      <div class="container">
-        <div class="row-fluid" style="padding: 10px">
-          <h1 class="h1">Geolocated Tweets</h1>
-          <br>
-          <br>
-          <div id="map" width="500" height="1000"></div>
-        </div>
-        <br>
-      </div>
-    </section>
+<!-- Tweet Volume -->
+<section id="tweet-volume" class="tweet-volume-section">
+  <div class="container">
+    <div class="row-fluid" style="padding: 20px">
+      <h2 class="h2">Tweet Comparison by Volume</h2>
+      <canvas id="totalComparison" width="500px" height="100px"></canvas>
+    </div>
+    <br>
+  </div>
+</section>
 
-    <!-- About -->
-    <section id="about" class="intro-section">
-      <div class="container">
-        <div class="row-fluid" style="padding: 10px">
-          <h1 class="h1">About</h1>
-            <div id="about" width="500" height="1000">
-              The data in this project was scraped and parsed from Twitter's live search webpage using Selenium WebDriver and Beautiful Soup. Due to limitations in the data scraping process, the data is limited to a sampling of tweets from each day and should not be used for research purposes.
-              <br>
-              <br>
-              The sentiment analysis is conducted using a Bernoulli Naive Bayes classifier trained on a set of hand-tagged training corpus of 500 tweets, classified as either negative or positive
-            </div>
-          </div>
-        <br>
-      </div>
-    </section>
+
+<!-- About -->
+<section id="about" class="about-section">
+  <div class="container">
+   <div class="row-fluid" style="padding: 30px">
+    <h2 class="h2">About</h2>
+    <br>
+    <div id="about">
+      The data in this project was scraped and parsed from Twitter's live search webpage using Selenium WebDriver and Beautiful Soup. Due to limitations in the data scraping process, the data is limited to a sampling of tweets from each day and should not be used for research purposes.
+      <br>
+      <br>
+      The sentiment analysis is conducted using a Bernoulli Naive Bayes classifier imported from Scikit-Learn and trained on a hand-tagged training corpus of 500 tweets, classified as either negative or positive. The classifier has an overall accuracy of 79%, with a precision of 81% for negative tweets, and 75% for positive tweets, and a recall of 87% for negative tweets, and 66% for positive tweets.
+    </div>
+  </div>
+  <br>
+</div>
+</section>
 
 
 
