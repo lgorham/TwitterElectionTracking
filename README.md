@@ -35,6 +35,9 @@ It is worth noting that due to constraints in the current field of Natural Langu
 ## <a name="datavisualizations"></a>Data Visualizations
 The data visualizations of the analyzed tweets are generated using Chart.js and Google Maps API. The line chart shows the raw number of tweets for each candidate, and each valence on any given day from January through present. The line chart is interactive, and allows users to toggle on/off specific candidates and valences in order to best see the comparisons they are most interested in. The doughnut charts displays what percentage of a given candidate's tweets are positive vs. negative. The bar chart compares the raw aggregate number of tweets about each candidate.
 
+![map_viz](https://s16.postimg.org/oz49r0hz9/Screen_Shot_2016_09_07_at_8_09_04_PM.png)
+
+
 The tweets are also displayed by geographical location of the tweeter's profile location. The profile location of each tweet was extracted from the HTML in the scraping process, and then the number of positive/negative tweets for a given candidate in each location were aggregated. This analysis is then displayed using Google Maps API for visualization, and the Google Maps Geocoder API to convert profile locations into coordinates for geospatial display.
 
 

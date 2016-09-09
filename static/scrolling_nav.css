@@ -48,27 +48,28 @@ of those sections to manage the look and feel of the site. */
 
 .donut_section {
     height: 100%;
-    padding-top: 50px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     text-align: center;
     background: #fff;
 }
 .tweet-volume-section {
     height: 80%;
-    padding-top: 50px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     text-align: center;
     background: #eee;
 }
 
 .map-section {
     height: 130%;
-    padding-top: 50px;
     text-align: center;
     background: #fff;
 }
 
 .about-section {
     height: 100%;
-    padding-top: 50px;
+    padding-top: 20px;
     text-align: center;
     background: #eee;
 }
