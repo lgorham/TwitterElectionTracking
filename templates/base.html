@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- <link href="/static/project.css" rel="stylesheet"> -->
+    
+
+    <!-- Style -->
+    <link href="/static/scrolling-nav.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+    <!-- Javascript Imports -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.min.js"></script>
+
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATuNr4ZfV0_k6-kjJlc8n5esv4WeU2wzk&callback=initMap"></script>
+
+    <!-- Nav Bar -->
+    <script src="/static/scrolling-nav.js" type="text/javascript"></script>
+
+    <!-- Data Visualizations -->
+    <script src="/static/data_visualizations.js" type="text/javascript"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Customized CSS -->
+    <link rel="stylesheet" href="/static/homepage_style.css">
+
+    <title>{% block title %}TITLE GOES HERE{% endblock %}</title>
+
+</head>
+<body>
+    {% block content %}
+
+    BODY CONTENT GOES HERE
+
+    {% endblock %}
+    <footer></footer>
+</body>
+</html>
+
+
