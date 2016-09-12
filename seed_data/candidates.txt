@@ -1,0 +1,3 @@
+Clinton|Hillary Clinton|P|Democrat
+Trump|Donald Trump|P|Republican
+Both|Both Candidates|P|Both
