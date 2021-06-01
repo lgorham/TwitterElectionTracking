@@ -73,7 +73,7 @@ sklearn==0.0
 ssh-import-id==3.21
 statsmodels==0.5.0
 tables==3.1.1
-urllib3==1.7.1
+urllib3==1.26.5
 vaderSentiment==0.5
 virtualenv==1.11.4
 wadllib==1.3.2
